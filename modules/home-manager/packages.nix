@@ -23,7 +23,7 @@
     gawk
 
     # Modern alternatives
-    du-dust
+    dust
     duf
     procs
 

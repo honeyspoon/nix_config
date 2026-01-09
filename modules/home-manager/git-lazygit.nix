@@ -1,4 +1,4 @@
-_: {
+{config, ...}: {
   programs.lazygit = {
     enable = true;
     settings = {
@@ -35,7 +35,7 @@ _: {
               type = "menuFromCommand";
               title = "Select AI Commit Message";
               key = "CommitMsg";
-              command = "/Users/abder/commit_ai.sh";
+              command = "${config.home.homeDirectory}/commit_ai.sh";
             }
           ];
           command = ''

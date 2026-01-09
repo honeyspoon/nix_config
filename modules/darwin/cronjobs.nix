@@ -1,5 +1,17 @@
-{pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   bash = "${pkgs.bash}/bin/bash";
+
+  primaryUser = config.system.primaryUser or "abder";
+  primaryUserHome = config.users.users.${primaryUser}.home or "/Users/${primaryUser}";
+
+  logsDir = "${primaryUserHome}/Library/Logs";
+
+  envPath = "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
 
   mkUserAgent = {
     name,
@@ -18,16 +30,16 @@
 
           EnvironmentVariables = {
             SHELL = "/bin/bash";
-            PATH = "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
+            PATH = envPath;
           };
 
-          StandardOutPath = "/Users/abder/Library/Logs/${name}.log";
-          StandardErrorPath = "/Users/abder/Library/Logs/${name}.err.log";
+          StandardOutPath = "${logsDir}/${name}.log";
+          StandardErrorPath = "${logsDir}/${name}.err.log";
         }
-        // pkgs.lib.optionalAttrs (startCalendarInterval != null) {
+        // lib.optionalAttrs (startCalendarInterval != null) {
           StartCalendarInterval = startCalendarInterval;
         }
-        // pkgs.lib.optionalAttrs (startInterval != null) {
+        // lib.optionalAttrs (startInterval != null) {
           StartInterval = startInterval;
         };
     };
@@ -36,13 +48,25 @@
   nixSyncScript = pkgs.writeShellScript "nix-sync" ''
     set -euo pipefail
 
-    export PATH="/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    export PATH="${envPath}"
+
+    flake_path="${primaryUserHome}/nix-config#abder-macbook"
+
+    darwin_rebuild="/run/current-system/sw/bin/darwin-rebuild"
+    if [ ! -x "$darwin_rebuild" ]; then
+      darwin_rebuild="$(command -v darwin-rebuild || true)"
+    fi
+
+    if [ -z "$darwin_rebuild" ]; then
+      /usr/bin/osascript -e "display notification \"darwin-rebuild not found; cannot sync nix config\" with title \"nix sync\""
+      exit 127
+    fi
 
     # This uses sudo non-interactively. If you haven't configured NOPASSWD
     # for darwin-rebuild, it will fail and you'll get a notification.
-    if ! sudo -n darwin-rebuild switch --flake "/Users/abder/nix-config#abder-macbook"; then
+    if ! sudo -n "$darwin_rebuild" switch --flake "$flake_path"; then
       status=$?
-      /usr/bin/osascript -e "display notification \"darwin-rebuild failed (exit $status). See ~/Library/Logs/nix-sync.*.log\" with title \"nix sync\""
+      /usr/bin/osascript -e "display notification \"darwin-rebuild failed (exit $status). See ${logsDir}/nix-sync.*.log\" with title \"nix sync\""
       exit $status
     fi
   '';
@@ -50,20 +74,28 @@
   nixSyncAgent = {
     "nix-sync" = {
       serviceConfig = {
-        ProgramArguments = [nixSyncScript];
+        ProgramArguments = ["${nixSyncScript}"];
 
         EnvironmentVariables = {
-          PATH = "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
+          PATH = envPath;
         };
 
         # Run at minute 0 of every hour
         StartCalendarInterval = [{Minute = 0;}];
 
-        StandardOutPath = "/Users/abder/Library/Logs/nix-sync.log";
-        StandardErrorPath = "/Users/abder/Library/Logs/nix-sync.err.log";
+        StandardOutPath = "${logsDir}/nix-sync.log";
+        StandardErrorPath = "${logsDir}/nix-sync.err.log";
       };
     };
   };
+
+  mantisDir = "${primaryUserHome}/mantis";
+  wtDir = "${primaryUserHome}/wt";
+  ceoDir = "${primaryUserHome}/ceo.ca";
+
+  cleanRustScript = "${primaryUserHome}/clean_rust.sh";
+  rustupBin = "${primaryUserHome}/.cargo/bin/rustup";
+  stockPickCommand = "cd ${ceoDir} && /opt/homebrew/bin/python3 stock_pick.py >> stock_pick_cron.log 2>&1";
 in {
   # macOS equivalent of cron: launchd jobs
   launchd.user.agents =
@@ -81,7 +113,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-mantis-pull";
-      command = "cd /Users/abder/mantis && git pull";
+      command = "cd ${mantisDir} && git pull";
       startInterval = 300;
     }
     // mkUserAgent {
@@ -106,7 +138,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-clean-rust";
-      command = "cd /Users/abder/wt && /Users/abder/clean_rust.sh";
+      command = "cd ${wtDir} && ${cleanRustScript}";
       startCalendarInterval = [
         {
           Hour = 9;
@@ -116,7 +148,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-stock-pick";
-      command = "cd /Users/abder/ceo.ca && /opt/homebrew/bin/python3 stock_pick.py >> stock_pick_cron.log 2>&1";
+      command = stockPickCommand;
       startCalendarInterval = [
         {
           Hour = 0;
@@ -126,7 +158,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-rustup-update";
-      command = "/Users/abder/.cargo/bin/rustup update stable";
+      command = "${rustupBin} update stable";
       startCalendarInterval = [
         {
           Hour = 0;

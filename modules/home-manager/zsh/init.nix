@@ -1,5 +1,5 @@
-_: {
-  programs.zsh.initExtra = ''
+{config, ...}: {
+  programs.zsh.initContent = ''
     # Increase file descriptor limit for Rust builds
     ulimit -n 10240
 
@@ -42,7 +42,7 @@ _: {
     fi
 
     # LM Studio CLI
-    export PATH="$PATH:/Users/abder/.lmstudio/bin"
+    export PATH="$PATH:${config.home.homeDirectory}/.lmstudio/bin"
 
     # PostgreSQL 17
     export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
@@ -51,13 +51,13 @@ _: {
     export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
 
     # Amp CLI
-    export PATH="/Users/abder/.amp/bin:$PATH"
+    export PATH="${config.home.homeDirectory}/.amp/bin:$PATH"
 
     # OpenCode
-    export PATH="/Users/abder/.opencode/bin:$PATH"
+    export PATH="${config.home.homeDirectory}/.opencode/bin:$PATH"
 
     # Bun completions
-    [ -s "/Users/abder/.bun/_bun" ] && source "/Users/abder/.bun/_bun"
+    [ -s "${config.home.homeDirectory}/.bun/_bun" ] && source "${config.home.homeDirectory}/.bun/_bun"
 
     # Conda initialization
     if [ -f /opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh ]; then

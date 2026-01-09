@@ -1,8 +1,6 @@
 {pkgs, ...}: {
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
-
   nix = {
+    enable = true;
     package = pkgs.nix;
 
     settings = {
@@ -10,8 +8,6 @@
         "nix-command"
         "flakes"
       ];
-
-      auto-optimise-store = true;
 
       max-jobs = 8;
       cores = 0;
@@ -31,5 +27,8 @@
       };
       options = "--delete-older-than 30d";
     };
+
+    # Replacement for `nix.settings.auto-optimise-store`
+    optimise.automatic = true;
   };
 }

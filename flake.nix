@@ -21,6 +21,7 @@
   };
 
   outputs = {
+    self,
     nix-darwin,
     nixpkgs,
     home-manager,
@@ -70,9 +71,19 @@
 
     checks = forAllSystems (
       system: let
+        pkgs = pkgsFor system;
         preCommitCheck = preCommitFor system;
+
+        # Evaluate the full nix-darwin configuration during `nix flake check`
+        # so module/option errors surface early, without forcing a full build.
+        darwinEval = pkgs.runCommand "darwin-eval" {} (
+          builtins.seq self.darwinConfigurations."abder-macbook".system ''
+            echo ok > $out
+          ''
+        );
       in {
         pre-commit = preCommitCheck;
+        darwin-eval = darwinEval;
       }
     );
 
@@ -91,6 +102,32 @@
           ];
 
           inherit (preCommitCheck) shellHook;
+        };
+      }
+    );
+
+    apps = forAllSystems (
+      system: let
+        pkgs = pkgsFor system;
+        darwinRebuild = "${nix-darwin.packages.${system}.default}/bin/darwin-rebuild";
+        flakeRef = "$HOME/nix-config#abder-macbook";
+      in {
+        darwin-build = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "darwin-build" ''
+            set -euo pipefail
+            exec ${darwinRebuild} build --flake "${flakeRef}"
+          ''}/bin/darwin-build";
+          meta.description = "Build nix-darwin system (no switch)";
+        };
+
+        darwin-switch = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "darwin-switch" ''
+            set -euo pipefail
+            exec sudo ${darwinRebuild} switch --flake "${flakeRef}"
+          ''}/bin/darwin-switch";
+          meta.description = "Switch nix-darwin system (requires sudo)";
         };
       }
     );
