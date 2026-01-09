@@ -32,7 +32,6 @@
 
     # Language toolchains
     rustup
-    nodejs_22
     python312
 
     # Build tools

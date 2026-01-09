@@ -35,11 +35,6 @@
     cargo-watch
     cargo-edit
 
-    # Node tools
-    nodePackages.npm
-    nodePackages.pnpm
-    yarn
-
     # Python tools
     python312Packages.pip
     python312Packages.ipython
