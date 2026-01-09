@@ -133,7 +133,7 @@
             # different Nix installer, nix-darwin will refuse to overwrite them.
             # We back them up once using the convention it suggests.
             exec sudo -H env FLAKE_REF="$flake_ref" ${pkgs.bash}/bin/bash -lc '
-              for f in /etc/nix/nix.conf; do
+              for f in /etc/nix/nix.conf /etc/shells; do
                 if [ -e "$f" ] && [ ! -L "$f" ]; then
                   backup="$f.before-nix-darwin"
                   if [ -e "$backup" ]; then
