@@ -7,14 +7,20 @@ _: {
         show-recents = false;
         tilesize = 48;
         minimize-to-application = true;
+
+        show-process-indicators = true;
+        "autohide-delay" = 0.0;
+        "autohide-time-modifier" = 0.2;
       };
 
       finder = {
         AppleShowAllExtensions = true;
+        AppleShowAllFiles = true;
         FXEnableExtensionChangeWarning = false;
         FXPreferredViewStyle = "Nlsv";
         ShowPathbar = true;
         ShowStatusBar = true;
+        _FXSortFoldersFirst = true;
       };
 
       NSGlobalDomain = {
@@ -24,6 +30,12 @@ _: {
         NSAutomaticSpellingCorrectionEnabled = false;
 
         AppleKeyboardUIMode = 3;
+
+        # Key repeat instead of press-and-hold.
+        ApplePressAndHoldEnabled = false;
+
+        # Save to disk by default (not iCloud).
+        NSDocumentSaveNewDocumentsToCloud = false;
 
         NSNavPanelExpandedStateForSaveMode = true;
         PMPrintingExpandedStateForPrint = true;
@@ -37,7 +49,11 @@ _: {
         TrackpadRightClick = true;
       };
 
-      screencapture.location = "~/Pictures/Screenshots";
+      screencapture = {
+        location = "~/Pictures/Screenshots";
+        type = "png";
+        disable-shadow = true;
+      };
     };
 
     keyboard = {

@@ -2,6 +2,9 @@ _: {
   homebrew = {
     enable = true;
 
+    # Keep manual brew commands predictable too.
+    global.autoUpdate = false;
+
     onActivation = {
       # Keep `darwin-rebuild switch` fast and predictable.
       # Updates/upgrades run from the `nix-sync` launchd job instead.

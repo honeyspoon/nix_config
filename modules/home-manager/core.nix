@@ -7,6 +7,7 @@
     # Ensure user-installed binaries are on PATH for all shells.
     sessionPath = [
       "${config.home.homeDirectory}/.opencode/bin"
+      "${config.home.homeDirectory}/.atuin/bin"
     ];
 
     sessionVariables = {

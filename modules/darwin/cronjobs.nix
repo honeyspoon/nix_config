@@ -149,7 +149,7 @@ in {
     {}
     // mkUserAgent {
       name = "cron-mantis-pull";
-      command = "cd ${mantisDir} && git pull";
+      command = "if [ -d ${mantisDir}/.git ]; then cd ${mantisDir} && git pull; else echo 'mantis: not a git repo' 1>&2; fi";
       startInterval = 300;
     }
     // mkUserAgent {
