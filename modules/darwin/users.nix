@@ -1,7 +1,9 @@
-{pkgs, ...}: {
+_: {
   users.users.abder = {
     name = "abder";
     home = "/Users/abder";
-    shell = pkgs.zsh;
+
+    # Use the system zsh so nix-darwin doesn't need to manage /etc/zshrc.
+    shell = "/bin/zsh";
   };
 }
