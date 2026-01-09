@@ -49,18 +49,6 @@ _: {
       icons = "auto";
     };
 
-    atuin = {
-      enable = true;
-      enableZshIntegration = true;
-      settings = {
-        auto_sync = true;
-        sync_frequency = "5m";
-        sync_address = "https://api.atuin.sh";
-        search_mode = "fuzzy";
-        filter_mode_shell_up_key_binding = "directory";
-      };
-    };
-
     tmux = {
       enable = true;
       baseIndex = 1;

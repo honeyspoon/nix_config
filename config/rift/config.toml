@@ -1,0 +1,478 @@
+# rift configuration
+# Migrated from AeroSpace configuration
+# See: https://github.com/acsandmann/rift/wiki/Config
+
+[settings]
+# ===== ANIMATIONS =====
+# Equivalent to AeroSpace's implicit animations
+animate = true
+animation_duration = 0.2         # Smooth but snappy
+animation_fps = 100.0
+animation_easing = "ease_in_out"
+
+# ===== SPACE/WORKSPACE ACTIVATION =====
+# AeroSpace: start-at-login = true (always manages spaces)
+# Rift: default_disable = false means spaces are managed by default
+# Set to true if you want to manually activate spaces with toggle_space_activated
+default_disable = false
+
+# ===== MOUSE & FOCUS BEHAVIOR =====
+# DISABLED: Prevents mouse from auto-centering when switching apps/windows
+# AeroSpace: on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+# Rift equivalent: mouse_follows_focus
+mouse_follows_focus = false # Changed from true - prevents auto mouse movement
+
+# ENABLED: Hover over a window to focus it
+# AeroSpace: automatically-unhide-macos-hidden-apps = true
+# Rift: Similar behavior via focus management
+focus_follows_mouse = true # Changed from false - enables hover-to-focus
+
+# Hide cursor after focusing (personal preference)
+mouse_hides_on_focus = true
+
+# Optional: Temporarily disable focus-follows-mouse while holding a key
+# Uncomment the line below to disable hover-to-focus while holding Fn key
+# Useful when you need precise mouse movements without changing window focus
+# focus_follows_mouse_disable_hotkey = "Fn"
+
+# ===== AUTO FOCUS BLACKLIST =====
+# Prevent system apps from stealing focus or triggering workspace switches
+# AeroSpace doesn't have this built-in, but it's useful
+auto_focus_blacklist = [
+  "com.apple.Spotlight",
+  "com.apple.dock",
+  "com.apple.systemuiserver",
+  "com.apple.SecurityAgent",
+]
+
+# ===== RUN ON START =====
+# Rift can subscribe to events and run commands on start.
+# Keeping this empty avoids tying the config to any specific status bar.
+run_on_start = []
+
+# ===== HOT RELOAD =====
+# Automatically reload config when changed
+hot_reload = true
+
+[settings.layout]
+# ===== LAYOUT MODE =====
+# AeroSpace uses container-based layouts (like i3/sway)
+# Rift equivalent: "traditional" mode
+mode = "traditional"
+
+[settings.layout.stack]
+# ===== STACK CONFIGURATION =====
+# AeroSpace: accordion-padding = 40
+# Rift equivalent: stack_offset (how much stacked windows peek out)
+stack_offset = 40.0
+
+# AeroSpace: default-root-container-layout = 'accordion'
+# AeroSpace: default-root-container-orientation = 'auto'
+# Rift: default_orientation controls stack behavior
+# - "perpendicular" = auto-alternating like AeroSpace
+# - "same" = maintains parent orientation
+default_orientation = "perpendicular"
+
+[settings.layout.gaps]
+# ===== GAPS CONFIGURATION =====
+# AeroSpace: gaps.inner.horizontal = 10, gaps.inner.vertical = 10
+# AeroSpace: gaps.outer.left/right = 10
+# AeroSpace: gaps.outer.bottom = [{ monitor."LG HDR 4K" = 15 }, 10]
+# AeroSpace: gaps.outer.top = [{ monitor."LG HDR 4K" = 45 }, 16]
+
+[settings.layout.gaps.outer]
+# Default outer gaps (screen edges)
+# Top gap needs to clear the macOS menu bar (and any optional bars).
+top = 50
+left = 10
+bottom = 10
+right = 10
+
+[settings.layout.gaps.inner]
+# Default inner gaps (between windows)
+horizontal = 10
+vertical = 10
+
+# ===== PER-DISPLAY GAP OVERRIDES =====
+# AeroSpace allows per-monitor gap configuration
+# Rift equivalent: settings.layout.gaps.per_display
+# To find your display UUID: run `rift serialize` or check System Profiler
+#
+# Example for "LG HDR 4K" monitor (replace UUID with your actual display UUID):
+# [settings.layout.gaps.per_display."YOUR-DISPLAY-UUID-HERE".outer]
+# top = 45    # AeroSpace: gaps.outer.top for "LG HDR 4K"
+# left = 10
+# bottom = 15  # AeroSpace: gaps.outer.bottom for "LG HDR 4K"
+# right = 10
+#
+# [settings.layout.gaps.per_display."YOUR-DISPLAY-UUID-HERE".inner]
+# horizontal = 10
+# vertical = 10
+
+[settings.ui.menu_bar]
+# ===== MENU BAR INDICATORS =====
+# Rift has built-in menu bar workspace indicators
+# Similar to SketchyBar workspace display but native
+enabled = false          # Set to true if you want native menu bar indicators alongside SketchyBar
+show_empty = false       # Don't show empty workspaces (cleaner)
+mode = "all"             # Show all workspaces
+active_label = "index"   # Use numbers like AeroSpace
+display_style = "layout" # Show layout preview
+
+[settings.ui.stack_line]
+# ===== STACK LINE INDICATOR =====
+# Visual indicator for stacked windows (experimental)
+enabled = false         # Disable by default
+horiz_placement = "top"
+vert_placement = "left"
+thickness = 2.0
+spacing = 4.0
+
+[settings.ui.mission_control]
+# ===== MISSION CONTROL INTEGRATION =====
+# Native macOS Mission Control integration (experimental)
+enabled = false
+fade_enabled = false
+fade_duration_ms = 180.0
+
+[settings.gestures]
+# ===== TRACKPAD GESTURES =====
+# Swipe to switch workspaces (not available in AeroSpace)
+enabled = true                  # Enable for convenient workspace switching
+invert_horizontal_swipe = false
+swipe_vertical_tolerance = 0.4
+skip_empty = true               # Skip empty workspaces when swiping
+fingers = 3
+distance_pct = 0.08
+haptics_enabled = true
+haptic_pattern = "level_change"
+
+[settings.window_snapping]
+# ===== WINDOW SNAPPING =====
+# Drag windows to swap positions (not available in AeroSpace)
+drag_swap_fraction = 0.3
+
+[virtual_workspaces]
+# ===== VIRTUAL WORKSPACES =====
+# AeroSpace manages workspaces via native macOS Spaces
+# Rift: virtual workspaces layer on top of macOS Spaces
+
+# Enable virtual workspaces (equivalent to AeroSpace's multi-workspace setup)
+enabled = true
+
+# AeroSpace: You configured 10 workspaces (1-10)
+# Rift: default_workspace_count
+default_workspace_count = 10
+
+# Automatically assign windows to workspaces based on app_rules
+# AeroSpace: [[on-window-detected]] rules
+# Rift equivalent: auto_assign_windows + app_rules
+auto_assign_windows = true
+
+# Remember last focused window per workspace
+# AeroSpace does this implicitly
+preserve_focus_per_workspace = true
+
+# Back-and-forth workspace switching
+# Press Alt+1 twice to toggle between current and workspace 1
+workspace_auto_back_and_forth = false
+
+# Note: reapply_app_rules_on_title_change is not available in this version of Rift
+# App rules are applied once when windows are created
+
+# Default workspace on startup (0-based, so 0 = first workspace)
+default_workspace = 0
+
+# ===== WORKSPACE NAMES =====
+# AeroSpace uses numeric IDs (1-10)
+# Rift uses 0-based indices, so we name them to match
+workspace_names = [
+  "1",  # Workspace 0 = "1" (terminal/dev)
+  "2",  # Workspace 1 = "2" (browser)
+  "3",  # Workspace 2 = "3" (notes)
+  "4",  # Workspace 3 = "4" (communication)
+  "5",  # Workspace 4 = "5" (productivity)
+  "6",  # Workspace 5 = "6"
+  "7",  # Workspace 6 = "7"
+  "8",  # Workspace 7 = "8"
+  "9",  # Workspace 8 = "9" (security)
+  "10", # Workspace 9 = "10" (media)
+]
+
+# ===== APPLICATION RULES =====
+# AeroSpace: [[on-window-detected]]
+# Rift: app_rules array
+#
+# Note: Rift uses 0-based workspace indices, so:
+# - AeroSpace workspace 1 = Rift workspace 0
+# - AeroSpace workspace 2 = Rift workspace 1
+# - etc.
+
+app_rules = [
+  # ===== SYSTEM/FLOATING WINDOWS =====
+  # Barbar status bar - should float and not be tiled
+  { app_id = "com.abder.barbar", floating = true },
+
+  # System dialogs and preferences should float
+  { ax_role = "AXDialog", floating = true },
+  { title_substring = "Preferences", floating = true },
+  { title_substring = "Settings", floating = true },
+
+  # ===== WORKSPACE 1 (Index 0) - TERMINAL/DEVELOPMENT =====
+  # WezTerm → workspace 1 (FIXED: was org.wezterm, correct is com.github.wez.wezterm)
+  { app_id = "com.github.wez.wezterm", workspace = 0 },
+  { app_name = "WezTerm", workspace = 0 },              # Fallback by name
+
+  # Cursor → workspace 1 (verified correct)
+  { app_id = "com.todesktop.230313mzl4w4u92", workspace = 0 },
+  { app_name = "Cursor", workspace = 0 },                      # Fallback by name
+
+  # Ghostty → workspace 1 (verified correct)
+  { app_id = "com.mitchellh.ghostty", workspace = 0 },
+  { app_name = "Ghostty", workspace = 0 },             # Fallback by name
+
+  # ===== WORKSPACE 2 (Index 1) - BROWSER =====
+  # Arc Browser → workspace 2 (verified correct)
+  { app_id = "company.thebrowser.Browser", workspace = 1 },
+  { app_name = "Arc", workspace = 1 },                      # Fallback by name
+
+  # Messages → workspace 2 (verified correct)
+  { app_id = "com.apple.MobileSMS", workspace = 1 },
+
+  # ===== WORKSPACE 3 (Index 2) - NOTES =====
+  # Notion → workspace 3 (verified correct)
+  { app_id = "notion.id", workspace = 2 },
+  { app_name = "Notion", workspace = 2 },  # Fallback by name
+
+  # ===== WORKSPACE 4 (Index 3) - COMMUNICATION =====
+  # Slack → workspace 4 (verified correct)
+  { app_id = "com.tinyspeck.slackmacgap", workspace = 3 },
+  { app_name = "Slack", workspace = 3 },                   # Fallback by name
+
+  # Beeper → workspace 4 (NEW: found in running apps)
+  { app_id = "com.automattic.beeper.desktop", workspace = 3 },
+  { app_name = "Beeper", workspace = 3 },                      # Fallback by name
+
+  # Zoom → workspace 4, floating (verified correct)
+  { app_id = "us.zoom.xos", workspace = 3, floating = true },
+  { app_name = "zoom.us", workspace = 3, floating = true },   # Fallback by name
+
+  # ===== WORKSPACE 5 (Index 4) - PRODUCTIVITY =====
+  # Apple Mail → workspace 5 (verified correct)
+  { app_id = "com.apple.mail", workspace = 4 },
+
+  # Apple Calendar → workspace 5 (verified correct)
+  { app_id = "com.apple.iCal", workspace = 4 },
+
+  # Notion Calendar (Cron) → workspace 5 (verified correct)
+  { app_id = "com.cron.electron", workspace = 4 },
+  { app_name = "Notion Calendar", workspace = 4 }, # Fallback by name
+
+  # ===== WORKSPACE 9 (Index 8) - SECURITY =====
+  # Bitwarden → workspace 9 (verified correct)
+  { app_id = "com.bitwarden.desktop", workspace = 8 },
+  { app_name = "Bitwarden", workspace = 8 },           # Fallback by name
+
+  # 1Password → workspace 9 (verified correct)
+  { app_id = "com.1password.1password", workspace = 8 },
+  { app_name = "1Password", workspace = 8 },             # Fallback by name
+
+  # ===== WORKSPACE 10 (Index 9) - MEDIA =====
+  # Spotify → workspace 10 (verified correct)
+  { app_id = "com.spotify.client", workspace = 9 },
+  { app_name = "Spotify", workspace = 9 },          # Fallback by name
+]
+
+# ===== MODIFIER COMBINATIONS =====
+# AeroSpace uses Alt and Alt+Shift extensively
+# Rift: Define reusable modifier combinations
+[modifier_combinations]
+# AeroSpace: alt-shift-* for move commands
+comb1 = "Alt + Shift"
+
+[keys]
+# ===== KEYBINDINGS =====
+# AeroSpace uses Alt as primary modifier
+# Rift: Meta = Command (⌘), Alt = Option (⌥)
+# Using Alt to match AeroSpace exactly
+
+# ===== SPACE MANAGEMENT =====
+# Rift-specific: Toggle whether current space is managed
+"Alt + Z" = "toggle_space_activated"
+
+# ===== NAVIGATION (VIM-STYLE) =====
+# AeroSpace: alt-h/j/k/l = focus left/down/up/right
+"Alt + H" = { move_focus = "left" }
+"Alt + J" = { move_focus = "down" }
+"Alt + K" = { move_focus = "up" }
+"Alt + L" = { move_focus = "right" }
+
+# ===== MOVE WINDOWS =====
+# AeroSpace: alt-shift-h/j/k/l = move left/down/up/right
+"comb1 + H" = { move_node = "left" }
+"comb1 + J" = { move_node = "down" }
+"comb1 + K" = { move_node = "up" }
+"comb1 + L" = { move_node = "right" }
+
+# ===== WORKSPACE SWITCHING =====
+# AeroSpace: alt-1 through alt-0 = workspace 1-10
+# Rift: 0-based, so Alt+0 = workspace 0 (displayed as "1")
+"Alt + 1" = { switch_to_workspace = 0 } # Workspace "1"
+"Alt + 2" = { switch_to_workspace = 1 } # Workspace "2"
+"Alt + 3" = { switch_to_workspace = 2 } # Workspace "3"
+"Alt + 4" = { switch_to_workspace = 3 } # Workspace "4"
+"Alt + 5" = { switch_to_workspace = 4 } # Workspace "5"
+"Alt + 6" = { switch_to_workspace = 5 } # Workspace "6"
+"Alt + 7" = { switch_to_workspace = 6 } # Workspace "7"
+"Alt + 8" = { switch_to_workspace = 7 } # Workspace "8"
+"Alt + 9" = { switch_to_workspace = 8 } # Workspace "9"
+"Alt + 0" = { switch_to_workspace = 9 } # Workspace "10"
+
+# ===== MOVE WINDOW TO WORKSPACE =====
+# AeroSpace: alt-shift-1 through alt-shift-0 = move to workspace 1-10
+"comb1 + 1" = { move_window_to_workspace = 0 } # To workspace "1"
+"comb1 + 2" = { move_window_to_workspace = 1 } # To workspace "2"
+"comb1 + 3" = { move_window_to_workspace = 2 } # To workspace "3"
+"comb1 + 4" = { move_window_to_workspace = 3 } # To workspace "4"
+"comb1 + 5" = { move_window_to_workspace = 4 } # To workspace "5"
+"comb1 + 6" = { move_window_to_workspace = 5 } # To workspace "6"
+"comb1 + 7" = { move_window_to_workspace = 6 } # To workspace "7"
+"comb1 + 8" = { move_window_to_workspace = 7 } # To workspace "8"
+"comb1 + 9" = { move_window_to_workspace = 8 } # To workspace "9"
+"comb1 + 0" = { move_window_to_workspace = 9 } # To workspace "10"
+
+# ===== LAYOUT SWITCHING =====
+# AeroSpace: alt-slash = 'layout tiles horizontal vertical'
+# Rift equivalent: toggle_orientation (switches split direction)
+"Alt + Slash" = "toggle_orientation"
+
+# AeroSpace: alt-comma = 'layout accordion horizontal vertical'
+# Rift equivalent: toggle_stack (creates/destroys stacks)
+"Alt + Comma" = "toggle_stack"
+
+# AeroSpace: alt-period = 'layout floating tiling'
+# Rift equivalent: toggle_window_floating
+"Alt + Period" = "toggle_window_floating"
+
+# ===== WINDOW RESIZING =====
+# AeroSpace: alt-shift-minus = 'resize smart -50'
+# AeroSpace: alt-shift-equal = 'resize smart +50'
+# Rift equivalent: resize_window_shrink/grow
+"comb1 + Minus" = "resize_window_shrink"
+"comb1 + Equal" = "resize_window_grow"
+
+# ===== SERVICE MODE EQUIVALENTS =====
+# AeroSpace: alt-shift-semicolon = 'mode service'
+# AeroSpace Service Mode commands:
+
+# AeroSpace Service Mode: esc = reload-config
+# Rift: hot_reload handles this automatically, but manual reload:
+# Note: Rift doesn't have a direct reload command via keybind
+# Use hot_reload = true instead
+
+# AeroSpace Service Mode: r = flatten-workspace-tree
+# Rift equivalent: unjoin_windows (separate joined containers)
+"Alt + Ctrl + E" = "unjoin_windows"
+
+# AeroSpace Service Mode: f = layout floating tiling
+"Alt + F" = "toggle_window_floating"
+
+# AeroSpace Service Mode: backspace = close-all-windows-but-current
+# Rift: No direct equivalent (would need external script)
+
+# AeroSpace Service Mode: alt-shift-h/j/k/l = join-with direction
+# Rift equivalent: join_window
+"Alt + Shift + Left" = { join_window = "left" }
+"Alt + Shift + Down" = { join_window = "down" }
+"Alt + Shift + Up" = { join_window = "up" }
+"Alt + Shift + Right" = { join_window = "right" }
+
+# ===== FULLSCREEN =====
+# Rift-specific: Two fullscreen modes
+"Alt + Shift + F" = "toggle_fullscreen"            # Fullscreen (ignores outer gaps)
+"Alt + Ctrl + F" = "toggle_fullscreen_within_gaps" # Fullscreen respecting gaps
+
+# ===== FLOATING WINDOW FOCUS =====
+# Rift-specific: Cycle focus to floating windows
+"comb1 + Ctrl + Space" = "toggle_focus_floating"
+
+# ===== LAST WORKSPACE =====
+# Rift-specific: Quick toggle to last workspace
+"Alt + Tab" = "switch_to_last_workspace"
+
+# ===== DEBUG/UTILITY =====
+# Rift-specific: Debug layout tree (helpful for troubleshooting)
+"Alt + Shift + D" = "debug"
+
+# Rift-specific: Serialize state (useful for bug reports)
+"Alt + Ctrl + S" = "serialize"
+
+# Rift-specific: Save and exit cleanly
+"Alt + Ctrl + Q" = "save_and_exit"
+
+# ===== DISABLED COMMANDS (MACOS SYSTEM) =====
+# AeroSpace: cmd-h = [] (disable hide application)
+# AeroSpace: cmd-alt-h = [] (disable hide others)
+# Rift: These are handled at the system level via macOS shortcuts settings
+# To disable: System Settings > Keyboard > Keyboard Shortcuts > App Shortcuts
+
+# ===== MISSION CONTROL (if enabled) =====
+# Uncomment if you enable settings.ui.mission_control
+# "Alt + Ctrl + M" = "show_mission_control_all"
+# "Alt + Ctrl + Shift + M" = "show_mission_control_current"
+
+# ===== MISSING AEROSPACE FEATURES IN RIFT =====
+# The following AeroSpace features don't have direct Rift equivalents:
+#
+# 1. enable-normalization-flatten-containers
+#    - AeroSpace-specific container management
+#    - Rift handles this differently in its layout engine
+#
+# 2. enable-normalization-opposite-orientation-for-nested-containers
+#    - Partially covered by default_orientation = "perpendicular"
+#
+# 3. cmd-h / cmd-alt-h disabling
+#    - Must be handled via macOS System Settings
+#
+# 4. key-mapping.preset (qwerty/dvorak)
+#    - Rift doesn't need this; works with system keyboard layout
+#
+# 5. after-login-command
+#    - Use run_on_start or macOS Login Items instead
+#
+# 6. Service mode binding
+#    - Rift uses direct keybinds instead of modal bindings
+#    - All commands are accessible without entering a mode
+
+# ===== NEW RIFT FEATURES NOT IN AEROSPACE =====
+# The following Rift features are NEW and not available in AeroSpace:
+#
+# 1. Trackpad gestures (settings.gestures)
+#    - Swipe to switch workspaces
+#
+# 2. Window drag-swap (settings.window_snapping)
+#    - Drag windows to swap positions
+#
+# 3. Mission Control integration (settings.ui.mission_control)
+#    - Native macOS Mission Control with Rift layouts
+#
+# 4. Menu bar indicators (settings.ui.menu_bar)
+#    - Built-in workspace indicators
+#
+# 5. Stack line indicator (settings.ui.stack_line)
+#    - Visual indicator for stacked windows
+#
+# 6. BSP layout mode (settings.layout.mode = "bsp")
+#    - Binary space partitioning as alternative to traditional
+#
+# 7. focus_follows_mouse_disable_hotkey
+#    - Temporarily suspend focus-follows-mouse
+#
+# 8. auto_focus_blacklist
+#    - Prevent specific apps from stealing focus
+#
+# 9. reapply_app_rules_on_title_change
+#    - Dynamic rule application based on window title changes
+#
+# 10. rift-cli subscribe
+#    - Event subscription system for external integrations

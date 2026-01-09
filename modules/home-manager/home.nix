@@ -7,6 +7,7 @@ _: {
     ./shell.nix
     ./git.nix
     ./neovim.nix
+    ./rift.nix
     ./terminal.nix
   ];
 }

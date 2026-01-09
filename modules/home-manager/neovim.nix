@@ -14,15 +14,28 @@
     # Sanity check: LazyVim expects a few CLI tools. We don’t install them here
     # (you prefer Homebrew/NVM), but warn loudly if they’re missing.
     activation.checkNeovimDeps = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      # Home Manager activations run with a minimal PATH, so check common
+      # locations (Homebrew + Nix) to avoid false positives.
+      export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/run/current-system/sw/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
+      have() {
+        command -v "$1" >/dev/null 2>&1 && return 0
+        [ -x "/opt/homebrew/bin/$1" ] && return 0
+        [ -x "/usr/local/bin/$1" ] && return 0
+        [ -x "/run/current-system/sw/bin/$1" ] && return 0
+        [ -x "$HOME/.nix-profile/bin/$1" ] && return 0
+        return 1
+      }
+
       missing=""
 
       for cmd in rg fd fzf git; do
-        command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"
+        have "$cmd" || missing="$missing $cmd"
       done
 
       # Optional but commonly required by plugins.
       for cmd in node python3; do
-        command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"
+        have "$cmd" || missing="$missing $cmd"
       done
 
       if [ -n "$missing" ]; then

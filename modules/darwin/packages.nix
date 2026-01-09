@@ -27,7 +27,6 @@
     # Shell tools
     fzf
     zoxide
-    atuin
     starship
 
     # Language toolchains

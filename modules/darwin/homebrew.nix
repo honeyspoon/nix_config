@@ -378,7 +378,6 @@ _: {
       "shellcheck"
       "showkey"
       "simdjson"
-      "sketchybar"
       "snappy"
       "spdlog"
       "speex"
