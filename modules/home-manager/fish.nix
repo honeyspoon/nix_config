@@ -3,7 +3,10 @@
     enable = true;
     shellInit = ''
       # LM Studio CLI
-      set -gx PATH $PATH ${config.home.homeDirectory}/.lmstudio/bin
+      fish_add_path -g ${config.home.homeDirectory}/.lmstudio/bin
+
+      # OpenCode CLI (installed via curl installer)
+      fish_add_path -g ${config.home.homeDirectory}/.opencode/bin
     '';
   };
 }

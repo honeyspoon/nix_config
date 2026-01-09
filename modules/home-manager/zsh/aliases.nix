@@ -1,6 +1,7 @@
 _: {
   programs.zsh.shellAliases = {
     g = "git";
+    lg = "lazygit";
 
     python = "python3";
     pip = "pip3";

@@ -1,8 +1,13 @@
-_: {
+{config, ...}: {
   home = {
     username = "abder";
     homeDirectory = "/Users/abder";
     stateVersion = "24.11";
+
+    # Ensure user-installed binaries are on PATH for all shells.
+    sessionPath = [
+      "${config.home.homeDirectory}/.opencode/bin"
+    ];
 
     sessionVariables = {
       EDITOR = "nvim";

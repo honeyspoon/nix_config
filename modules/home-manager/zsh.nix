@@ -5,5 +5,6 @@ _: {
     ./zsh/history.nix
     ./zsh/init.nix
     ./zsh/session-vars.nix
+    ./zsh/cleanup.nix
   ];
 }
