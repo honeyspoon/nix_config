@@ -50,6 +50,22 @@
 
     export PATH="${envPath}"
 
+    notify() {
+      local message="$1"
+      /usr/bin/osascript -e "display notification \"$message\" with title \"nix sync\""
+    }
+
+    run_step() {
+      local name="$1"
+      shift
+      if ! "$@"; then
+        local status=$?
+        notify "$name failed (exit $status). See ${logsDir}/nix-sync.*.log"
+        exit $status
+      fi
+    }
+
+    flake_dir="${primaryUserHome}/nix-config"
     flake_path="${primaryUserHome}/nix-config#abder-macbook"
 
     darwin_rebuild="/run/current-system/sw/bin/darwin-rebuild"
@@ -58,15 +74,46 @@
     fi
 
     if [ -z "$darwin_rebuild" ]; then
-      /usr/bin/osascript -e "display notification \"darwin-rebuild not found; cannot sync nix config\" with title \"nix sync\""
+      notify "darwin-rebuild not found; cannot sync nix config"
       exit 127
     fi
 
-    # This uses sudo non-interactively. If you haven't configured NOPASSWD
-    # for darwin-rebuild, it will fail and you'll get a notification.
+    # Do "update" work once per day at 03:00, while "apply" runs hourly.
+    now_hour="$(/bin/date +%H)"
+    now_weekday="$(/bin/date +%u)" # 1..7 (Mon..Sun)
+
+    if [ "$now_hour" = "03" ]; then
+      if [ -d "$flake_dir" ]; then
+        run_step "nix flake update" /bin/sh -lc "cd \"$flake_dir\" && nix flake update"
+        run_step "nix flake check" /bin/sh -lc "cd \"$flake_dir\" && nix flake check -L"
+      fi
+
+      # Homebrew casks are prebuilt binaries; keep formula upgrades manual.
+      if command -v brew >/dev/null 2>&1; then
+        run_step "brew update" brew update
+        run_step "brew upgrade (casks)" brew upgrade --cask --greedy
+      fi
+
+      # Rust toolchain auto-update (downloads toolchain; no compilation).
+      if [ -x "${rustupBin}" ]; then
+        run_step "rustup update" "${rustupBin}" update stable
+      fi
+
+      # Weekly pip self-update (Sunday @ 03:00)
+      if [ "$now_weekday" = "7" ] && command -v python3 >/dev/null 2>&1; then
+        run_step "pip upgrade" python3 -m pip install --upgrade pip
+      fi
+
+      # npm global updates require node; try to run via Homebrew nvm.
+      if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
+        run_step "npm update" /bin/sh -lc 'set -euo pipefail; export NVM_DIR="$HOME/.nvm"; . /opt/homebrew/opt/nvm/nvm.sh; nvm use --lts >/dev/null; npm update -g'
+      fi
+    fi
+
+    # Apply your nix-darwin config hourly (requires passwordless sudo for unattended runs)
     if ! sudo -n "$darwin_rebuild" switch --flake "$flake_path"; then
       status=$?
-      /usr/bin/osascript -e "display notification \"darwin-rebuild failed (exit $status). See ${logsDir}/nix-sync.*.log\" with title \"nix sync\""
+      notify "darwin-rebuild switch needs sudo (exit $status). Run manually: sudo darwin-rebuild switch --flake $flake_path"
       exit $status
     fi
   '';
@@ -101,17 +148,6 @@ in {
   launchd.user.agents =
     {}
     // mkUserAgent {
-      name = "cron-pip-upgrade";
-      command = "python3 -m pip install --upgrade pip";
-      startCalendarInterval = [
-        {
-          Weekday = 0;
-          Hour = 0;
-          Minute = 0;
-        }
-      ];
-    }
-    // mkUserAgent {
       name = "cron-mantis-pull";
       command = "cd ${mantisDir} && git pull";
       startInterval = 300;
@@ -139,26 +175,6 @@ in {
     // mkUserAgent {
       name = "cron-stock-pick";
       command = stockPickCommand;
-      startCalendarInterval = [
-        {
-          Hour = 0;
-          Minute = 0;
-        }
-      ];
-    }
-    // mkUserAgent {
-      name = "cron-rustup-update";
-      command = "${rustupBin} update stable";
-      startCalendarInterval = [
-        {
-          Hour = 0;
-          Minute = 0;
-        }
-      ];
-    }
-    // mkUserAgent {
-      name = "cron-npm-update";
-      command = "npm update -g";
       startCalendarInterval = [
         {
           Hour = 0;
