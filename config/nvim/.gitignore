@@ -1,0 +1,38 @@
+# Compiled Lua sources
+luac.out
+
+# Lazy.nvim plugin manager data
+.repro/
+
+# Plugin installs
+/plugin/
+
+# Swap
+[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+
+# Auto-generated tag files
+tags
+
+# Persistent undo
+[._]*.un~
+
+# Lock files
+lazy-lock.json
+
+# Cache files
+.cache/
+usage_data.json
+tools/nvim-monitor/target

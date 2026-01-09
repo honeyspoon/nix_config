@@ -43,6 +43,13 @@
           alejandra.enable = true;
           statix.enable = true;
           deadnix.enable = true;
+
+          # Neovim/LazyVim config
+          stylua.enable = true;
+
+          # Format common config formats
+          taplo.enable = true;
+          prettier.enable = true;
         };
       };
   in {
@@ -103,6 +110,9 @@
             alejandra
             statix
             deadnix
+            stylua
+            taplo
+            nodePackages.prettier
             nil
             pre-commit
           ];
