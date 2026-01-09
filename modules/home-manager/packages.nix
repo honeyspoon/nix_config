@@ -30,13 +30,5 @@
     # Development
     pre-commit
     shellcheck
-
-    # Rust tools
-    cargo-watch
-    cargo-edit
-
-    # Python tools
-    python312Packages.pip
-    python312Packages.ipython
   ];
 }

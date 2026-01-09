@@ -32,18 +32,6 @@
 
     # Language toolchains
     rustup
-    python312
-
-    # Build tools
-    cmake
-    gnumake
-    pkg-config
-
-    # Database tools
-    postgresql_17
-
-    # Container tools
-    docker
 
     # Nix tools
     nil # Nix LSP

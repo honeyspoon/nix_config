@@ -4,7 +4,11 @@ _: {
 
     onActivation = {
       autoUpdate = true;
-      upgrade = true;
+
+      # Avoid Homebrew building from source during activation.
+      # Upgrade explicitly when you want with `brew upgrade --force-bottle`.
+      upgrade = false;
+
       cleanup = "zap";
     };
 

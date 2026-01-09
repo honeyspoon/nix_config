@@ -127,16 +127,6 @@ in {
       ];
     }
     // mkUserAgent {
-      name = "cron-brew-upgrade-nvim";
-      command = "brew upgrade nvim";
-      startCalendarInterval = [
-        {
-          Hour = 0;
-          Minute = 1;
-        }
-      ];
-    }
-    // mkUserAgent {
       name = "cron-clean-rust";
       command = "cd ${wtDir} && ${cleanRustScript}";
       startCalendarInterval = [
