@@ -1,0 +1,21 @@
+_: {
+  home.file.".config/.lazycommit.yaml".text = ''
+    language: en
+    providers:
+      openai:
+        api_key: "$OPENAI_API_KEY"
+        model: "gpt-4o"
+  '';
+
+  home.file.".config/.lazycommit.prompts.yaml".text = ''
+    system_message: You are a helpful assistant that generates git commit messages, and pull request titles.
+    commit_message_template: |-
+        Based on the following git diff, generate 10 conventional commit messages. Each message should be on a new line, without any numbering or bullet points:
+
+        %s
+    pr_title_template: |-
+        Based on the following git diff, generate 10 pull request title suggestions. Each title should be on a new line, without any numbering or bullet points:
+
+        %s
+  '';
+}
