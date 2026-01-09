@@ -3,7 +3,9 @@ _: {
     enable = true;
 
     onActivation = {
-      autoUpdate = true;
+      # Keep `darwin-rebuild switch` fast and predictable.
+      # Updates/upgrades run from the `nix-sync` launchd job instead.
+      autoUpdate = false;
 
       # Avoid Homebrew building from source during activation.
       # Upgrade explicitly when you want with `brew upgrade --force-bottle`.
@@ -341,7 +343,11 @@ _: {
       "proxychains-ng"
       "pulumi"
       "pycparser"
-      "python-packaging"
+      {
+        name = "python-packaging";
+        # Avoid link conflicts with site-packages managed elsewhere.
+        link = false;
+      }
       "python-tk@3.13"
       "python@3.11"
       "python@3.12"
@@ -434,7 +440,11 @@ _: {
       "xvid"
       "xz"
       "yq"
-      "yt-dlp"
+      {
+        name = "yt-dlp";
+        # Avoid bin/yt-dlp link conflicts (often installed via other methods).
+        link = false;
+      }
       "z3"
       "zeromq"
       "zig"
@@ -454,7 +464,6 @@ _: {
       "android-platform-tools"
       "android-studio"
       "armcord"
-      "aws-vault"
       "aws-vault-binary"
       "bitwarden"
       "bluesnooze"
@@ -491,7 +500,6 @@ _: {
       "mitmproxy"
       "mockoon"
       "musaicfm"
-      "neovide"
       "neovide-app"
       "ngrok"
       "notion"
