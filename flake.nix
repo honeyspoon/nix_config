@@ -126,16 +126,19 @@
           program = "${pkgs.writeShellScriptBin "darwin-switch" ''
             set -euo pipefail
 
+            # Preserve the invoking user's flake path.
+            flake_ref="$HOME/nix-config#abder-macbook"
+
             # One-time safety: if you have pre-existing /etc files from a
             # different Nix installer, nix-darwin will refuse to overwrite them.
             # We back them up once using the convention it suggests.
-            exec sudo -H ${pkgs.bash}/bin/bash -lc '
+            exec sudo -H env FLAKE_REF="$flake_ref" ${pkgs.bash}/bin/bash -lc '
               for f in /etc/nix/nix.conf /etc/bashrc /etc/zshrc; do
                 if [ -e "$f" ] && [ ! -L "$f" ] && [ ! -e "$f.before-nix-darwin" ]; then
                   mv "$f" "$f.before-nix-darwin"
                 fi
               done
-              exec ${darwinRebuild} switch --flake "${flakeRef}"
+              exec ${darwinRebuild} switch --flake "$FLAKE_REF"
             '
           ''}/bin/darwin-switch";
           meta.description = "Switch nix-darwin system (requires sudo)";
