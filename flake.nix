@@ -59,6 +59,12 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
+
+            # When Home Manager is enabled as a nix-darwin module, it will refuse
+            # to overwrite pre-existing dotfiles. Back them up once so the first
+            # `darwin-switch` succeeds.
+            backupFileExtension = "before-nix-home-manager";
+
             users.abder = import ./modules/home-manager/home.nix;
           };
         }
