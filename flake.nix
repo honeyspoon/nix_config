@@ -60,6 +60,9 @@
       modules = [
         ./modules/darwin/configuration.nix
 
+        # Expose wrapped apps as pkgs.* within nix-darwin
+        {nixpkgs.overlays = [self.overlays.default];}
+
         # Home Manager module
         home-manager.darwinModules.home-manager
         {
@@ -81,6 +84,14 @@
     legacyPackages = forAllSystems pkgsFor;
 
     formatter = forAllSystems (system: (pkgsFor system).alejandra);
+
+    overlays.default = _final: prev: {
+      inherit
+        (self.packages.${prev.stdenv.hostPlatform.system})
+        nvim-lazyvim
+        opencode-wrapped
+        ;
+    };
 
     checks = forAllSystems (
       system: let

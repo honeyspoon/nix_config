@@ -18,6 +18,8 @@
     # Development tools
     gh # GitHub CLI
     lazygit
+    nvim-lazyvim
+    opencode-wrapped
     direnv
     jq
 
