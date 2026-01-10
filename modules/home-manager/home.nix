@@ -7,7 +7,10 @@ _: {
     ./shell.nix
     ./git.nix
     ./neovim.nix
+    ./opencode.nix
     ./rift.nix
     ./terminal.nix
+
+    ./activation-tools.nix
   ];
 }
