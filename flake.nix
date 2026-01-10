@@ -252,13 +252,30 @@
       system: let
         pkgs = pkgsFor system;
         darwinRebuild = "${nix-darwin.packages.${system}.default}/bin/darwin-rebuild";
-        flakeRef = "$HOME/nix-config#${host}";
       in {
         darwin-build = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "darwin-build" ''
             set -euo pipefail
-            exec ${darwinRebuild} build --flake "${flakeRef}"
+
+            if [ -n "''${FLAKE_DIR:-}" ]; then
+              flake_dir="$FLAKE_DIR"
+            elif command -v git >/dev/null 2>&1; then
+              flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+            else
+              flake_dir=""
+            fi
+
+            if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+              flake_dir="$HOME/nix-config"
+            fi
+
+            if [ ! -e "$flake_dir/flake.nix" ]; then
+              echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
+              exit 2
+            fi
+
+            exec ${darwinRebuild} build --flake "$flake_dir#${host}"
           ''}/bin/darwin-build";
           meta.description = "Build nix-darwin system (no switch)";
         };
@@ -268,8 +285,24 @@
           program = "${pkgs.writeShellScriptBin "darwin-switch" ''
             set -euo pipefail
 
-            # Preserve the invoking user's flake path.
-            flake_ref="$HOME/nix-config#${host}"
+            if [ -n "''${FLAKE_DIR:-}" ]; then
+              flake_dir="$FLAKE_DIR"
+            elif command -v git >/dev/null 2>&1; then
+              flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+            else
+              flake_dir=""
+            fi
+
+            if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+              flake_dir="$HOME/nix-config"
+            fi
+
+            if [ ! -e "$flake_dir/flake.nix" ]; then
+              echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
+              exit 2
+            fi
+
+            flake_ref="$flake_dir#${host}"
 
             # One-time safety: if you have pre-existing /etc files from a
             # different Nix installer, nix-darwin will refuse to overwrite them.
