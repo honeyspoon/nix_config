@@ -32,8 +32,13 @@
     [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
     [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
-    # Cargo environment
-    [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+    # Cargo binaries (append so Nix-provided tools win)
+    if [ -d "$HOME/.cargo/bin" ]; then
+      case ":$PATH:" in
+        *":$HOME/.cargo/bin:"*) ;;
+        *) export PATH="$PATH:$HOME/.cargo/bin" ;;
+      esac
+    fi
 
     # jenv (Java version manager)
     if command -v jenv &>/dev/null; then

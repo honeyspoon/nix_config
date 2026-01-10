@@ -6,6 +6,8 @@
 
     # Ensure user-installed binaries are on PATH for all shells.
     sessionPath = [
+      "/run/current-system/sw/bin"
+      "${config.home.profileDirectory}/bin"
       "${config.home.homeDirectory}/.opencode/bin"
     ];
 
