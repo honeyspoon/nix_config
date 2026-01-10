@@ -1,0 +1,36 @@
+customCommands:
+  - command: "# Create a temporary file for the commit message\nCOMMIT_MSG_FILE=$(mktemp /tmp/lazygit_ai_commit_msg.XXXXXX)\necho \"LZG_CMD_LOG: Temporary commit file created: $COMMIT_MSG_FILE\"\n\n# Get the selected message from the menu\nSELECTED_FROM_MENU=\"{{.Form.CommitMsg}}\"\necho \"LZG_CMD_LOG: Selected from menu (raw): >>>$SELECTED_FROM_MENU<<<\"\n\nCLEANED_COMMIT_MSG=\"$SELECTED_FROM_MENU\"\necho \"LZG_CMD_LOG: Cleaned commit message: >>>$CLEANED_COMMIT_MSG<<<\"\n\necho \"$CLEANED_COMMIT_MSG\" > \"$COMMIT_MSG_FILE\"\n\necho \"LZG_CMD_LOG: Opening editor (${EDITOR:-vim}') for file: $COMMIT_MSG_FILE. PLEASE SAVE AND QUIT THE EDITOR.\"\n${EDITOR:-vim} \"$COMMIT_MSG_FILE\"\nEDITOR_EXIT_CODE=$?\necho \"LZG_CMD_LOG: Editor closed with exit code: $EDITOR_EXIT_CODE\"\n\nif [ \"$EDITOR_EXIT_CODE\" -ne 0 ]; then\n    echo \"LZG_CMD_LOG: Editor exited abnormally (code: $EDITOR_EXIT_CODE) or was cancelled. Commit aborted.\"\n    rm -f \"$COMMIT_MSG_FILE\"\nelse\n    # Read the first non-comment, non-empty line after editing\n    FINAL_COMMIT_MSG=$(awk '!/^#/ && NF {print; exit}' \"$COMMIT_MSG_FILE\")\n    echo \"LZG_CMD_LOG: Final commit message read from file: >>>$FINAL_COMMIT_MSG<<<\"\n\n    if [ -n \"$FINAL_COMMIT_MSG\" ]; then\n        echo \"LZG_CMD_LOG: Attempting to commit with message: >>>$FINAL_COMMIT_MSG<<<\"\n\n        git commit -m \"$FINAL_COMMIT_MSG\"\n        GIT_COMMIT_EXIT_CODE=$?\n        echo \"LZG_CMD_LOG: git commit exited with code: $GIT_COMMIT_EXIT_CODE\"\n\n        if [ \"$GIT_COMMIT_EXIT_CODE\" -ne 0 ]; then\n            echo \"LZG_CMD_LOG: GIT COMMIT FAILED.\"\n        else\n            echo \"LZG_CMD_LOG: GIT COMMIT SUCCEEDED.\"\n        fi\n    else\n        echo \"LZG_CMD_LOG: No valid commit message found in file after editing. Commit aborted.\"\n    fi\nfi\n\necho \"LZG_CMD_LOG: Cleaning up temp file: $COMMIT_MSG_FILE\"\nrm -f \"$COMMIT_MSG_FILE\"\necho \"LZG_CMD_LOG: --- LAZYGIT POST-SELECTION SCRIPT FINISHED ---\"\n"
+    context: global
+    description: Pick AI commit
+    key: <c-g>
+    output: terminal
+    prompts:
+      - command: /Users/abder/commit_ai.sh
+        key: CommitMsg
+        title: Select AI Commit Message
+        type: menuFromCommand
+gui:
+  nerdFontsVersion: "3"
+  theme:
+    activeBorderColor:
+      - "#ff9e64"
+      - bold
+    cherryPickedCommitBgColor:
+      - "#bb9af7"
+    cherryPickedCommitFgColor:
+      - "#7aa2f7"
+    defaultFgColor:
+      - "#c0caf5"
+    inactiveBorderColor:
+      - "#27a1b9"
+    optionsTextColor:
+      - "#7aa2f7"
+    searchingActiveBorderColor:
+      - "#ff9e64"
+      - bold
+    selectedLineBgColor:
+      - "#283457"
+    unstagedChangesColor:
+      - "#db4b4b"
+os:
+  editPreset: nvim-remote

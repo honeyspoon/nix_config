@@ -31,6 +31,10 @@ _: {
     "gh-dash/config.yml".source = ../../config/gh-dash/config.yml;
 
     "marimo/marimo.toml".source = ../../config/marimo/marimo.toml;
+
+    "lazygit/config.yml".source = ../../config/lazygit/config.yml;
+
+    "ueberzugpp/config.json".source = ../../config/ueberzugpp/config.json;
   };
 
   # Home-root dotfiles
