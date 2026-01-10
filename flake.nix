@@ -122,6 +122,91 @@
       }
     );
 
+    packages = forAllSystems (
+      system: let
+        pkgs = pkgsFor system;
+
+        lazyvimConfig = pkgs.runCommand "lazyvim-config" {} ''
+          mkdir -p "$out/config"
+          cp -R "${./config/nvim}" "$out/config/nvim"
+        '';
+
+        opencodeWrappedConfig = pkgs.runCommand "opencode-wrapped-config" {} ''
+          mkdir -p "$out/opencode"
+
+          cat > "$out/opencode/opencode-bell.md" <<'EOF'
+          # Attention bell
+
+          When you are about to WAIT for user input (a question, a choice, confirmation, or approval), output a terminal bell character exactly once on its own line:
+
+          \a
+
+          Then ask the question / request the confirmation.
+
+          Also output \a once when you are completely done and no further user input is required.
+          EOF
+
+          cat > "$out/opencode/.opencode.json" <<EOF
+          {
+            "autoCompact": true,
+            "shell": { "path": "/bin/zsh", "args": ["-l"] },
+            "contextPaths": [
+              "$out/opencode/opencode-bell.md",
+              ".github/copilot-instructions.md",
+              ".cursorrules",
+              ".cursor/rules/",
+              "CLAUDE.md",
+              "CLAUDE.local.md",
+              "opencode.md",
+              "opencode.local.md",
+              "OpenCode.md",
+              "OpenCode.local.md",
+              "OPENCODE.md",
+              "OPENCODE.local.md"
+            ]
+          }
+          EOF
+
+          mkdir -p "$out/opencode/commands"
+          if [ -d "${./config/opencode/commands}" ]; then
+            cp -R "${./config/opencode/commands}/." "$out/opencode/commands/"
+          fi
+        '';
+      in {
+        nvim-lazyvim = pkgs.writeShellScriptBin "nvim-lazyvim" ''
+          set -euo pipefail
+
+          export XDG_CONFIG_HOME="${lazyvimConfig}/config"
+
+          if [ -x /opt/homebrew/bin/nvim ]; then
+            exec /opt/homebrew/bin/nvim "$@"
+          elif [ -x /run/current-system/sw/bin/nvim ]; then
+            exec /run/current-system/sw/bin/nvim "$@"
+          elif command -v nvim >/dev/null 2>&1; then
+            exec nvim "$@"
+          else
+            echo "nvim not found (install via Homebrew or Nix)" >&2
+            exit 127
+          fi
+        '';
+
+        opencode-wrapped = pkgs.writeShellScriptBin "opencode-wrapped" ''
+          set -euo pipefail
+
+          export XDG_CONFIG_HOME="${opencodeWrappedConfig}"
+
+          if [ -x "$HOME/.opencode/bin/opencode" ]; then
+            exec "$HOME/.opencode/bin/opencode" "$@"
+          elif command -v opencode >/dev/null 2>&1; then
+            exec opencode "$@"
+          else
+            echo "opencode not found; install via the curl installer" >&2
+            exit 127
+          fi
+        '';
+      }
+    );
+
     apps = forAllSystems (
       system: let
         pkgs = pkgsFor system;
@@ -162,6 +247,18 @@
             '
           ''}/bin/darwin-switch";
           meta.description = "Switch nix-darwin system (requires sudo)";
+        };
+
+        nvim-lazyvim = {
+          type = "app";
+          program = "${self.packages.${system}.nvim-lazyvim}/bin/nvim-lazyvim";
+          meta.description = "Run Neovim with vendored LazyVim config";
+        };
+
+        opencode-wrapped = {
+          type = "app";
+          program = "${self.packages.${system}.opencode-wrapped}/bin/opencode-wrapped";
+          meta.description = "Run OpenCode with nix-managed config and commands";
         };
       }
     );
