@@ -20,6 +20,13 @@ _: {
     "mcphub/servers.json".source = ../../config/mcphub/servers.json;
 
     "amp/settings.json".source = ../../config/amp/settings.json;
+
+    "aerospace/aerospace.toml".source = ../../config/aerospace/aerospace.toml;
+
+    "ghostty/themes" = {
+      source = ../../config/ghostty/themes;
+      recursive = true;
+    };
   };
 
   # Home-root dotfiles
