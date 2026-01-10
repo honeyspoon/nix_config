@@ -5,6 +5,11 @@
 }: let
   opencodeDir = "${config.home.homeDirectory}/.opencode";
 in {
+  xdg.configFile."opencode/commands" = {
+    source = ../../config/opencode/commands;
+    recursive = true;
+  };
+
   home.file = {
     ".opencode/package.json".source = ../../config/opencode/package.json;
     ".opencode/bun.lock".source = ../../config/opencode/bun.lock;
@@ -12,6 +17,12 @@ in {
 
     ".opencode/skill" = {
       source = ../../config/opencode/skill;
+      recursive = true;
+    };
+
+    # User commands (Ctrl+K)
+    ".opencode/commands" = {
+      source = ../../config/opencode/commands;
       recursive = true;
     };
   };
