@@ -1,0 +1,13 @@
+[allowlist]
+description = "Allow common env var placeholders and non-secret identifiers"
+regexes = [
+  "OPENAI_API_KEY",
+  "GROQ_API_KEY",
+  "ANTHROPIC_API_KEY",
+  "api_key: \"\\$[A-Z0-9_]+\"",
+]
+paths = [
+  "modules/home-manager/secrets.nix",
+  "modules/home-manager/git-lazycommit.nix",
+  "config/lazycommit/.lazycommit.yaml",
+]

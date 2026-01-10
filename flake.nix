@@ -49,7 +49,9 @@
 
     pkgsFor = system: import nixpkgs {inherit system;};
 
-    preCommitFor = system:
+    preCommitFor = system: let
+      pkgs = pkgsFor system;
+    in
       pre-commit-hooks.lib.${system}.run {
         src = ./.;
         hooks = {
@@ -63,6 +65,12 @@
           # Format common config formats
           taplo.enable = true;
           prettier.enable = true;
+
+          gitleaks = {
+            enable = true;
+            name = "gitleaks";
+            entry = "${pkgs.gitleaks}/bin/gitleaks detect --source . --no-git --redact --config .gitleaks.toml";
+          };
         };
       };
   in {
@@ -147,6 +155,7 @@
             nodePackages.prettier
             nil
             pre-commit
+            gitleaks
           ];
 
           inherit (preCommitCheck) shellHook;
