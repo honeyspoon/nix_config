@@ -8,7 +8,7 @@
 
 creation_rules:
   - path_regex: secrets/.*\.(ya?ml|json)$
-    encrypted_regex: "^(data|stringData|secrets)$"
+    encrypted_regex: ".*"
     age:
       # Replace this with your real age recipient.
-      - age1REPLACE_ME_WITH_YOUR_RECIPIENT
+      - age1qmkmt95z886jlce04j9thl6hnjj999vzj2zamqmwl936psv5k5lq5jhyph
