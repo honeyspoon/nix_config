@@ -5,7 +5,7 @@ customCommands:
     key: <c-g>
     output: terminal
     prompts:
-      - command: /Users/abder/commit_ai.sh
+      - command: ~/commit_ai.sh
         key: CommitMsg
         title: Select AI Commit Message
         type: menuFromCommand

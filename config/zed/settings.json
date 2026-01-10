@@ -19,8 +19,8 @@
   "icon_theme": "Catppuccin Latte",
   "agent_servers": {
     "opencode": {
-      "command": "/Users/abder/.opencode/bin/opencode",
-      "args": ["acp"],
+      "command": "/bin/zsh",
+      "args": ["-lic", "opencode acp"],
       "env": {}
     }
   },
