@@ -27,6 +27,10 @@ _: {
       source = ../../config/ghostty/themes;
       recursive = true;
     };
+
+    "gh-dash/config.yml".source = ../../config/gh-dash/config.yml;
+
+    "marimo/marimo.toml".source = ../../config/marimo/marimo.toml;
   };
 
   # Home-root dotfiles
