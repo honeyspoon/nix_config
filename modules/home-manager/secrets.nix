@@ -24,8 +24,9 @@ in {
   # This avoids baking secret values into the Nix store.
   programs.zsh.initExtra = lib.mkIf (builtins.pathExists secretsFile) (
     lib.mkAfter ''
-      if [ -r "${config.xdg.runtimeDir}/secrets/openai_api_key" ]; then
-        export OPENAI_API_KEY="$(cat \"${config.xdg.runtimeDir}/secrets/openai_api_key\")"
+      secret_path="${config.sops.secrets.openai_api_key.path}"
+      if [ -r "$secret_path" ]; then
+        export OPENAI_API_KEY="$(cat \"$secret_path\")"
       fi
     ''
   );
