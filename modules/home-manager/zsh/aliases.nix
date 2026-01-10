@@ -1,4 +1,4 @@
-_: {
+{pkgs, ...}: {
   programs.zsh.shellAliases = {
     g = "git";
     lg = "lazygit";
@@ -7,7 +7,8 @@ _: {
     pip = "pip3";
 
     ls = "eza";
-    cat = "bat";
+    bat = "${pkgs.bat}/bin/bat";
+    cat = "${pkgs.bat}/bin/bat";
 
     clast = "fc -s :0 | pbcopy";
 

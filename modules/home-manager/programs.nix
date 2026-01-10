@@ -1,4 +1,8 @@
-_: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   programs = {
     home-manager.enable = true;
 
@@ -39,6 +43,7 @@ _: {
       config = {
         theme = "TwoDark";
         pager = "less -FR";
+        style = "plain";
       };
     };
 
@@ -81,4 +86,13 @@ _: {
       '';
     };
   };
+
+  home.activation.batCacheRebuild = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    cache_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/bat"
+    rm -rf "$cache_dir"
+
+    if [ -x "${pkgs.bat}/bin/bat" ]; then
+      "${pkgs.bat}/bin/bat" cache --build >/dev/null 2>&1 || true
+    fi
+  '';
 }
