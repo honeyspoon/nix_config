@@ -10,6 +10,7 @@ _: {
     ./opencode.nix
     ./rift.nix
     ./terminal.nix
+    ./vendor-configs.nix
 
     ./activation-tools.nix
   ];

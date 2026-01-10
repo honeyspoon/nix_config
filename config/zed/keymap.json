@@ -1,0 +1,42 @@
+[
+  {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "ctrl-shift-h": "vim::ResizePaneRight",
+      "ctrl-shift-j": "vim::ResizePaneDown",
+      "ctrl-shift-k": "vim::ResizePaneUp",
+      "ctrl-shift-l": "vim::ResizePaneLeft"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-shift-h": "workspace::DecreaseOpenDocksSize",
+      "ctrl-shift-j": "workspace::IncreaseActiveDockSize",
+      "ctrl-shift-k": "workspace::DecreaseActiveDockSize",
+      "ctrl-shift-l": "workspace::IncreaseOpenDocksSize"
+    }
+  },
+  {
+    "context": "AssistantPanel",
+    "bindings": {
+      "ctrl-shift-h": "workspace::ToggleZoom",
+      "ctrl-shift-j": "workspace::ToggleZoom",
+      "ctrl-shift-k": "workspace::ToggleZoom",
+      "ctrl-shift-l": "workspace::ToggleZoom"
+    }
+  },
+  {
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-a \"": "pane::SplitHorizontal",
+      "ctrl-a |": "pane::SplitVertical",
+      "ctrl-a z": "workspace::ToggleZoom",
+      "ctrl-a t": "workspace::NewTerminal",
+      "ctrl-a c": "workspace::NewCenterTerminal"
+    }
+  }
+]

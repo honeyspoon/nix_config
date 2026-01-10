@@ -1,0 +1,140 @@
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "ssh_connections": [
+    {
+      "host": "i-0f3513bed31126f97",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/ec2-user"]
+        }
+      ]
+    }
+  ],
+  "icon_theme": "Catppuccin Latte",
+  "agent_servers": {
+    "opencode": {
+      "command": "/Users/abder/.opencode/bin/opencode",
+      "args": ["acp"],
+      "env": {}
+    }
+  },
+  "agent": {
+    "play_sound_when_agent_done": true,
+    "always_allow_tool_actions": true,
+    "model_parameters": [],
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gemini-2.5-pro"
+    }
+  },
+  "telemetry": {
+    "metrics": false,
+    "diagnostics": false
+  },
+  "vim_mode": true,
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "theme": {
+    "mode": "system",
+    "light": "Tokyo Night",
+    "dark": "Ayu Mirage"
+  },
+  "tab_bar": {
+    "show": false,
+    "show_nav_history_buttons": false,
+    "show_tab_bar_buttons": false
+  },
+  "terminal": {
+    "shell": "system",
+    "dock": "bottom",
+    "default_width": 640,
+    "default_height": 320,
+    "working_directory": "current_project_directory",
+    "blinking": "terminal_controlled",
+    "cursor_shape": null,
+    "alternate_scroll": "on",
+    "option_as_meta": false,
+    "copy_on_select": false,
+    "keep_selection_on_copy": false,
+    "button": false,
+    "env": {},
+    "line_height": "comfortable",
+    "detect_venv": {
+      "on": {
+        "directories": [".env", "env", ".venv", "venv"],
+        "activate_script": "default"
+      }
+    },
+    "toolbar": {
+      "breadcrumbs": false
+    },
+    "scrollbar": {
+      "show": null
+    },
+    "font_weight": 400,
+    "max_scroll_history_lines": 10000,
+    "minimum_contrast": 45
+  },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false,
+    "selections_menu": false,
+    "agent_review": false,
+    "code_actions": false
+  },
+  "status_bar": {
+    "active_language_button": false,
+    "cursor_position_button": false
+  },
+  "title_bar": {
+    "show_branch_icon": false,
+    "show_branch_name": false,
+    "show_project_items": false,
+    "show_onboarding_banner": false,
+    "show_user_picture": false,
+    "show_sign_in": false,
+    "show_menus": false
+  },
+  "project_panel": {
+    "button": false,
+    "starts_open": false
+  },
+  "outline_panel": {
+    "button": false
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "git_panel": {
+    "button": false
+  },
+  "gutter": {
+    "line_numbers": true,
+    "runnables": false,
+    "breakpoints": false,
+    "folds": false
+  },
+  "scrollbar": {
+    "show": "never"
+  },
+  "minimap": {
+    "show": "never"
+  },
+  "show_call_status_icon": false,
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": true
+    }
+  }
+}
