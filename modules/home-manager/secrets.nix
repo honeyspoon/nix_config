@@ -25,7 +25,7 @@ in {
   programs.zsh.initExtra = lib.mkIf (builtins.pathExists secretsFile) (
     lib.mkAfter ''
       secret_path="${config.sops.secrets.openai_api_key.path}"
-      if [ -r "$secret_path" ]; then
+      if [ -z "''${OPENAI_API_KEY:-}" ] && [ -r "$secret_path" ]; then
         export OPENAI_API_KEY="$(cat \"$secret_path\")"
       fi
     ''
