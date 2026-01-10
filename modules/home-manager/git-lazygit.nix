@@ -1,4 +1,9 @@
 {config, ...}: {
+  home.file."commit_ai.sh" = {
+    source = ../../scripts/commit_ai.sh;
+    executable = true;
+  };
+
   programs.lazygit = {
     enable = true;
     settings = {
