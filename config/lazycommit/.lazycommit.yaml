@@ -1,0 +1,5 @@
+language: en
+providers:
+  openai:
+    api_key: "$OPENAI_API_KEY"
+    model: "gpt-4o"
