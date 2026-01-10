@@ -1,0 +1,3 @@
+# Managed by nix-config; keep only generated deps ignored.
+node_modules/
+.DS_Store
