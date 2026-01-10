@@ -1,7 +1,11 @@
-{config, ...}: {
+{
+  config,
+  user,
+  ...
+}: {
   home = {
-    username = "abder";
-    homeDirectory = "/Users/abder";
+    username = user.name;
+    homeDirectory = user.home;
     stateVersion = "24.11";
 
     # Ensure user-installed binaries are on PATH for all shells.

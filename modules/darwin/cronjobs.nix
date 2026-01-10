@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  host ? "abder-macbook",
   ...
 }: let
   bash = "${pkgs.bash}/bin/bash";
@@ -66,7 +67,7 @@
     }
 
     flake_dir="${primaryUserHome}/nix-config"
-    flake_path="${primaryUserHome}/nix-config#abder-macbook"
+    flake_path="${primaryUserHome}/nix-config#${host}"
 
     darwin_rebuild="/run/current-system/sw/bin/darwin-rebuild"
     if [ ! -x "$darwin_rebuild" ]; then

@@ -1,11 +1,11 @@
-_: {
+{user, ...}: {
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 5;
 
   # Required by newer nix-darwin: activation runs as root and
   # user-scoped options attach to this primary user.
-  system.primaryUser = "abder";
+  system.primaryUser = user.name;
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 }

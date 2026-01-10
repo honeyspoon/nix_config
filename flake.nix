@@ -32,6 +32,13 @@
       "aarch64-darwin"
     ];
 
+    user = {
+      name = "abder";
+      home = "/Users/abder";
+    };
+
+    host = "abder-macbook";
+
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
     pkgsFor = system: import nixpkgs {inherit system;};
@@ -54,8 +61,9 @@
       };
   in {
     # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#abder-macbook
-    darwinConfigurations."abder-macbook" = nix-darwin.lib.darwinSystem {
+    # $ darwin-rebuild build --flake .#${host}
+    darwinConfigurations.${host} = nix-darwin.lib.darwinSystem {
+      specialArgs = {inherit user host;};
       system = "aarch64-darwin";
       modules = [
         ./modules/darwin/configuration.nix
@@ -75,7 +83,9 @@
             # `darwin-switch` succeeds.
             backupFileExtension = "before-nix-home-manager";
 
-            users.abder = import ./modules/home-manager/home.nix;
+            extraSpecialArgs = {inherit user host;};
+
+            users.${user.name} = import ./modules/home-manager/home.nix;
           };
         }
       ];
@@ -101,7 +111,7 @@
         # Evaluate the full nix-darwin configuration during `nix flake check`
         # so module/option errors surface early, without forcing a full build.
         darwinEval = pkgs.runCommand "darwin-eval" {} (
-          builtins.seq self.darwinConfigurations."abder-macbook".system ''
+          builtins.seq self.darwinConfigurations.${host}.system ''
             echo ok > $out
           ''
         );
@@ -222,7 +232,7 @@
       system: let
         pkgs = pkgsFor system;
         darwinRebuild = "${nix-darwin.packages.${system}.default}/bin/darwin-rebuild";
-        flakeRef = "$HOME/nix-config#abder-macbook";
+        flakeRef = "$HOME/nix-config#${host}";
       in {
         darwin-build = {
           type = "app";
@@ -239,7 +249,7 @@
             set -euo pipefail
 
             # Preserve the invoking user's flake path.
-            flake_ref="$HOME/nix-config#abder-macbook"
+            flake_ref="$HOME/nix-config#${host}"
 
             # One-time safety: if you have pre-existing /etc files from a
             # different Nix installer, nix-darwin will refuse to overwrite them.

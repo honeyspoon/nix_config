@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  user,
+  ...
+}: {
   nix = {
     enable = true;
     package = pkgs.nix;
@@ -27,7 +31,7 @@
 
       trusted-users = [
         "@admin"
-        "abder"
+        user.name
       ];
     };
 
