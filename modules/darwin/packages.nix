@@ -43,5 +43,7 @@
     alejandra
     statix
     deadnix
+    sops
+    age
   ];
 }

@@ -18,6 +18,11 @@
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -26,6 +31,7 @@
     nixpkgs,
     home-manager,
     pre-commit-hooks,
+    sops-nix,
     ...
   }: let
     supportedSystems = [
@@ -84,6 +90,11 @@
             backupFileExtension = "before-nix-home-manager";
 
             extraSpecialArgs = {inherit user host;};
+
+            sharedModules = [
+              sops-nix.homeManagerModules.sops
+              ./modules/home-manager/secrets.nix
+            ];
 
             users.${user.name} = import ./modules/home-manager/home.nix;
           };

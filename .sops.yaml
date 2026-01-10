@@ -1,0 +1,14 @@
+# sops configuration for this repo.
+#
+# Setup (recommended):
+# - Install `age-plugin-ssh` and use your existing SSH key as the encryption identity.
+# - Add your age recipient below, then run `sops --encrypt --in-place secrets/secrets.yaml`.
+#
+# IMPORTANT: never commit plaintext secrets.
+
+creation_rules:
+  - path_regex: secrets/.*\.(ya?ml|json)$
+    encrypted_regex: "^(data|stringData|secrets)$"
+    age:
+      # Replace this with your real age recipient.
+      - age1REPLACE_ME_WITH_YOUR_RECIPIENT
