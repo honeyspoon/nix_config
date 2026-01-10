@@ -32,7 +32,11 @@
     starship
 
     # Language toolchains
-    rustup
+    cargo
+    rustc
+    rust-analyzer
+    rustfmt
+    clippy
 
     # Nix tools
     nil # Nix LSP

@@ -94,11 +94,6 @@
         run_step "brew upgrade (casks)" brew upgrade --cask --greedy
       fi
 
-      # Rust toolchain auto-update (downloads toolchain; no compilation).
-      if [ -x "${rustupBin}" ]; then
-        run_step "rustup update" "${rustupBin}" update stable
-      fi
-
       # Weekly pip self-update (Sunday @ 03:00)
       if [ "$now_weekday" = "7" ] && command -v python3 >/dev/null 2>&1; then
         run_step "pip upgrade" python3 -m pip install --upgrade pip
@@ -141,7 +136,6 @@
   ceoDir = "${primaryUserHome}/ceo.ca";
 
   cleanRustScript = "${primaryUserHome}/clean_rust.sh";
-  rustupBin = "${primaryUserHome}/.cargo/bin/rustup";
   stockPickCommand = "cd ${ceoDir} && /opt/homebrew/bin/python3 stock_pick.py >> stock_pick_cron.log 2>&1";
 in {
   # macOS equivalent of cron: launchd jobs
