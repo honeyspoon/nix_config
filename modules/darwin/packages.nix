@@ -19,9 +19,11 @@
     gh # GitHub CLI
     lazygit
     nvim-lazyvim
+    opencode
     opencode-wrapped
     direnv
     jq
+    bun
 
     # Terminal multiplexing
     tmux

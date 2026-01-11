@@ -22,7 +22,7 @@ in {
 
   # Optional: load secrets into interactive shells at runtime.
   # This avoids baking secret values into the Nix store.
-  programs.zsh.initExtra = lib.mkIf (builtins.pathExists secretsFile) (
+  programs.zsh.initContent = lib.mkIf (builtins.pathExists secretsFile) (
     lib.mkAfter ''
       secret_path="${config.sops.secrets.openai_api_key.path}"
       if [ -z "''${OPENAI_API_KEY:-}" ] && [ -r "$secret_path" ]; then

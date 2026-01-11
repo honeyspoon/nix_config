@@ -3,6 +3,11 @@
   user,
   ...
 }: {
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (pkgs.lib.getName pkg) [
+      "claude-code"
+    ];
+
   nix = {
     enable = true;
     package = pkgs.nix;

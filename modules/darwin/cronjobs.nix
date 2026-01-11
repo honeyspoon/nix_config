@@ -95,15 +95,8 @@
         run_step "brew upgrade (casks)" brew upgrade --cask --greedy
       fi
 
-      # Weekly pip self-update (Sunday @ 03:00)
-      if [ "$now_weekday" = "7" ] && command -v python3 >/dev/null 2>&1; then
-        run_step "pip upgrade" python3 -m pip install --upgrade pip
-      fi
-
-      # npm global updates require node; try to run via Homebrew nvm.
-      if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
-        run_step "npm update" /bin/sh -lc 'set -euo pipefail; export NVM_DIR="$HOME/.nvm"; . /opt/homebrew/opt/nvm/nvm.sh; nvm use --lts >/dev/null; npm update -g'
-      fi
+      # Avoid mutating language toolchains automatically.
+      # Keep Python/Node tooling pinned via Nix + per-project lockfiles.
     fi
 
     # Apply your nix-darwin config hourly (requires passwordless sudo for unattended runs)

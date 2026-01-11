@@ -12,7 +12,6 @@
     sessionPath = [
       "/run/current-system/sw/bin"
       "${config.home.profileDirectory}/bin"
-      "${config.home.homeDirectory}/.opencode/bin"
     ];
 
     sessionVariables = {

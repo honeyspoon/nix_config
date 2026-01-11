@@ -1,0 +1,51 @@
+# Local-only pre-commit config (no network downloads)
+# Uses tools from your Nix devShell / system PATH.
+
+default_stages: [pre-commit]
+
+repos:
+  - repo: local
+    hooks:
+      - id: alejandra
+        name: alejandra
+        entry: alejandra
+        language: system
+        files: "\\.nix$"
+
+      - id: deadnix
+        name: deadnix
+        entry: deadnix --fail
+        language: system
+        files: "\\.nix$"
+
+      - id: statix
+        name: statix
+        entry: statix check --format errfmt
+        language: system
+        files: "\\.nix$"
+        pass_filenames: false
+
+      - id: gitleaks
+        name: gitleaks
+        entry: gitleaks detect --source . --no-git --redact --config .gitleaks.toml
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: prettier
+        name: prettier
+        entry: prettier --ignore-unknown --list-different --write
+        language: system
+        types: [text]
+
+      - id: stylua
+        name: stylua
+        entry: stylua --respect-ignores
+        language: system
+        types: [lua]
+
+      - id: taplo
+        name: taplo
+        entry: taplo fmt
+        language: system
+        types: [toml]

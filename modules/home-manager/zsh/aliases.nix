@@ -19,8 +19,8 @@
     vi = "nvim";
     vim = "nvim";
 
-    nix-rebuild = "darwin-rebuild switch --flake ~/nix-config";
-    nix-update = "cd ~/nix-config && nix flake update && darwin-rebuild switch --flake .";
+    nix-rebuild = "nix run ~/nix-config#darwin-switch";
+    nix-update = "cd ~/nix-config && nix flake update && nix run .#darwin-switch";
     nix-clean = "nix-collect-garbage -d && nix-store --optimize";
 
     clippy-mantis = "cargo clippy --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W clippy::cargo -A clippy::module_name_repetitions -A clippy::missing_errors_doc -A clippy::missing_panics_doc -A clippy::must_use_candidate -A clippy::return_self_not_must_use -A clippy::cargo_common_metadata -A clippy::multiple_crate_versions -A clippy::too_many_lines -A clippy::large_stack_arrays -A clippy::large_futures -A clippy::derive_partial_eq_without_eq";

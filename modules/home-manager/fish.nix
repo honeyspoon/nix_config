@@ -5,8 +5,8 @@
       # LM Studio CLI
       fish_add_path -g ${config.home.homeDirectory}/.lmstudio/bin
 
-      # OpenCode CLI (installed via curl installer)
-      fish_add_path -g ${config.home.homeDirectory}/.opencode/bin
+      # cargo-binstall installs into ~/.cargo/bin
+      fish_add_path -g ${config.home.homeDirectory}/.cargo/bin
     '';
   };
 }
