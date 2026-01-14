@@ -2,24 +2,41 @@
   description = "Abder's Nix Darwin Configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Keep Nixpkgs aligned with nix-darwin 25.11 (avoid local builds like LLVM).
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
     };
 
     nix-darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "https://flakehub.com/f/nix-darwin/nix-darwin/0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "https://flakehub.com/f/nix-community/home-manager/0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -29,6 +46,8 @@
     nix-darwin,
     home-manager,
     sops-nix,
+    nix-index-database,
+    zen-browser,
     flake-parts,
     ...
   }:
@@ -43,7 +62,7 @@
           home = "/Users/abder";
         };
 
-        host = "abder-macbook";
+        host = "workmbp";
       in {
         # Build darwin flake using:
         # $ darwin-rebuild build --flake .#${host}
@@ -68,10 +87,12 @@
                 # `darwin-switch` succeeds.
                 backupFileExtension = "before-nix-home-manager";
 
-                extraSpecialArgs = {inherit user host;};
+                extraSpecialArgs = {inherit user host inputs;};
 
                 sharedModules = [
                   sops-nix.homeManagerModules.sops
+                  nix-index-database.homeModules.nix-index
+                  zen-browser.homeModules.twilight
                   ./modules/home-manager/secrets.nix
                 ];
 
@@ -85,7 +106,6 @@
           inherit
             (self.packages.${prev.stdenv.hostPlatform.system})
             nvim-lazyvim
-            opencode-wrapped
             ;
         };
       };
@@ -137,7 +157,7 @@
           fi
         '';
 
-        host = "abder-macbook";
+        host = "workmbp";
         darwinRebuild = "${nix-darwin.packages.${system}.default}/bin/darwin-rebuild";
 
         # Evaluate the full nix-darwin configuration during `nix flake check`
@@ -169,17 +189,6 @@
               exec nvim "$@"
             else
               echo "nvim not found (install via Homebrew or Nix)" >&2
-              exit 127
-            fi
-          '';
-
-          opencode-wrapped = pkgs.writeShellScriptBin "opencode-wrapped" ''
-            set -euo pipefail
-
-            if command -v opencode >/dev/null 2>&1; then
-              exec opencode "$@"
-            else
-              echo "opencode not found" >&2
               exit 127
             fi
           '';
@@ -281,12 +290,6 @@
             type = "app";
             program = "${self.packages.${system}.nvim-lazyvim}/bin/nvim-lazyvim";
             meta.description = "Run Neovim with vendored LazyVim config";
-          };
-
-          opencode-wrapped = {
-            type = "app";
-            program = "${self.packages.${system}.opencode-wrapped}/bin/opencode-wrapped";
-            meta.description = "Run OpenCode with nix-managed config and commands";
           };
 
           check-deprecations = {

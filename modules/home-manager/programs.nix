@@ -6,6 +6,12 @@
   programs = {
     home-manager.enable = true;
 
+    nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
+    };
+
     direnv = {
       enable = true;
       enableZshIntegration = true;

@@ -30,6 +30,14 @@
     # Prefer Nix-provided runtimes (avoid brew/nvm/conda drift)
     export UV_PYTHON_PREFERENCE="only-system"
 
+    # zsh-vi-mode overrides keybindings after init, so we must use its hook.
+    # This ensures Ctrl-R works for reverse history search with vi keymaps.
+    zvm_after_init() {
+      bindkey "^R" history-incremental-search-backward
+      bindkey -M viins "^R" history-incremental-search-backward
+      bindkey -M vicmd "^R" history-incremental-search-backward
+    }
+
     # Cargo binaries (append so Nix-provided tools win)
     if [ -d "$HOME/.cargo/bin" ]; then
       case ":$PATH:" in

@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -18,6 +14,7 @@
       {
         name = "zsh-vi-mode";
         src = pkgs.zsh-vi-mode;
+        file = "share/zsh-vi-mode/zsh-vi-mode.plugin.zsh";
       }
       {
         name = "zsh-you-should-use";
@@ -25,7 +22,8 @@
       }
     ];
 
-    # Pin legacy location to silence deprecation warnings.
-    dotDir = config.home.homeDirectory;
+    # dotDir must be relative to $HOME, not an absolute path.
+    # Empty string means use $HOME directly (default behavior).
+    dotDir = ".config/zsh";
   };
 }

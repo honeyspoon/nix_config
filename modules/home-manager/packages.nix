@@ -37,6 +37,9 @@
     postgresql_17
     uv
 
+    # Nix discoverability
+    comma
+
     # Rust / Cargo CLI tools (installed via cargo-binstall)
     cargo-binstall
 

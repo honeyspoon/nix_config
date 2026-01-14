@@ -7,9 +7,11 @@ _: {
     ./shell.nix
     ./git.nix
     ./neovim.nix
+    ./claude.nix
     ./opencode.nix
     ./rift.nix
     ./terminal.nix
+    ./zen-browser.nix
     ./vendor-configs.nix
 
     ./activation-tools.nix
