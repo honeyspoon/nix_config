@@ -21,9 +21,5 @@
         src = pkgs.zsh-you-should-use;
       }
     ];
-
-    # dotDir must be relative to $HOME, not an absolute path.
-    # Empty string means use $HOME directly (default behavior).
-    dotDir = ".config/zsh";
   };
 }

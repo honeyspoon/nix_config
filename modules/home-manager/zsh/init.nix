@@ -30,12 +30,21 @@
     # Prefer Nix-provided runtimes (avoid brew/nvm/conda drift)
     export UV_PYTHON_PREFERENCE="only-system"
 
+    # fzf keybindings/completions (Ctrl-T/Ctrl-R) for zsh.
+    if command -v fzf >/dev/null 2>&1; then
+      eval "$(fzf --zsh)"
+    fi
+
     # zsh-vi-mode overrides keybindings after init, so we must use its hook.
-    # This ensures Ctrl-R works for reverse history search with vi keymaps.
+    # Re-apply fzf bindings for vi keymaps.
     zvm_after_init() {
-      bindkey "^R" history-incremental-search-backward
-      bindkey -M viins "^R" history-incremental-search-backward
-      bindkey -M vicmd "^R" history-incremental-search-backward
+      bindkey "^R" fzf-history-widget
+      bindkey -M viins "^R" fzf-history-widget
+      bindkey -M vicmd "^R" fzf-history-widget
+
+      bindkey "^T" fzf-file-widget
+      bindkey -M viins "^T" fzf-file-widget
+      bindkey -M vicmd "^T" fzf-file-widget
     }
 
     # Cargo binaries (append so Nix-provided tools win)
@@ -60,6 +69,9 @@
 
     # Amp CLI
     export PATH="${config.home.homeDirectory}/.amp/bin:$PATH"
+
+    # Local binaries (ocx, etc.)
+    export PATH="$HOME/.local/bin:$PATH"
 
     # Clear screen on shell start
     clear

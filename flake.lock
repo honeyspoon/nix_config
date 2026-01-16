@@ -8,11 +8,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1768363414,
-        "narHash": "sha256-9LW3RqHM13WnhhpAZjZA0i/SdPAOZg4R2kG/kUD0aO0=",
+        "lastModified": 1768536226,
+        "narHash": "sha256-d1VSTNa7ajTxT39QBp3gKSbgmgn7yx8RxTZuvZwNX9Y=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "1abc7eea7d965009e7d7fdc683985b3245933fb3",
+        "rev": "b092ea4a7d083e09e0aa2de909c1b35b9efb3ee0",
         "type": "gitlab"
       },
       "original": {
@@ -129,6 +129,38 @@
         "type": "github"
       }
     },
+    "opencode-mystatus": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768329166,
+        "narHash": "sha256-98Ghl4AvbeIFvwHtl8RmOnNMfBvvf0Nmp7oi4liCWyg=",
+        "owner": "vbgate",
+        "repo": "opencode-mystatus",
+        "rev": "af9c0e33acafae60fef7c7a8e8998a14c9191fbc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vbgate",
+        "repo": "opencode-mystatus",
+        "type": "github"
+      }
+    },
+    "opencode-notify": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768279365,
+        "narHash": "sha256-tQ6TX8rAFFBKCRWzk7XQxxmFZDVO2K0EUnivDEHZ9Ek=",
+        "owner": "kdcokenny",
+        "repo": "opencode-notify",
+        "rev": "8db0819cf268ae67ae7fb84abe2b040bfdfeb863",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kdcokenny",
+        "repo": "opencode-notify",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "firefox-addons": "firefox-addons",
@@ -137,8 +169,27 @@
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
+        "opencode-mystatus": "opencode-mystatus",
+        "opencode-notify": "opencode-notify",
+        "skill-react-best-practices": "skill-react-best-practices",
         "sops-nix": "sops-nix",
         "zen-browser": "zen-browser"
+      }
+    },
+    "skill-react-best-practices": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768500580,
+        "narHash": "sha256-xqyt/k0mi+o2bPshpOY48dHB7RvoImUNK8hPkXGCZQo=",
+        "owner": "vercel-labs",
+        "repo": "agent-skills",
+        "rev": "42ecbef87d26daa782f5ee8c77b91e149228e9de",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vercel-labs",
+        "repo": "agent-skills",
+        "type": "github"
       }
     },
     "sops-nix": {
@@ -148,11 +199,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768271704,
-        "narHash": "sha256-jJqlW8A3OZ5tYbXphF7U8P8g/3Cn8PPwPa4YlJ/9agg=",
+        "lastModified": 1768481291,
+        "narHash": "sha256-NjKtkJraCZEnLHAJxLTI+BfdU//9coAz9p5TqveZwPU=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "691b8b6713855d0fe463993867291c158472fc6f",
+        "rev": "e085e303dfcce21adcb5fec535d65aacb066f101",
         "type": "github"
       },
       "original": {
@@ -171,11 +222,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768329214,
-        "narHash": "sha256-ASI9j+Fgj7TzB4mj+IBIBrV5mH9P/D/vjKLyVDZWZOw=",
+        "lastModified": 1768379550,
+        "narHash": "sha256-z94S29l5V86h11LZbPIMbHTJyksDG63aqISsZkTTuJY=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "2357b84ef617772c012397a7e8b4542bd5e4bab8",
+        "rev": "06f61b4e4f4f6ba8027c96a5611c63dc0db12b90",
         "type": "github"
       },
       "original": {

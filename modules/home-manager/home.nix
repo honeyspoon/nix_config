@@ -12,6 +12,7 @@ _: {
     ./rift.nix
     ./terminal.nix
     ./zen-browser.nix
+    ./skills.nix
     ./vendor-configs.nix
 
     ./activation-tools.nix

@@ -39,6 +39,23 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Agent skills (auto-update with `nix flake update`)
+    skill-react-best-practices = {
+      url = "github:vercel-labs/agent-skills";
+      flake = false;
+    };
+
+    # OpenCode plugins
+    opencode-notify = {
+      url = "github:kdcokenny/opencode-notify";
+      flake = false;
+    };
+
+    opencode-mystatus = {
+      url = "github:vbgate/opencode-mystatus";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
