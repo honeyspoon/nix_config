@@ -45,6 +45,7 @@
 
     # Development
     claude-code
+    agent-browser
     pre-commit
     shellcheck
   ];

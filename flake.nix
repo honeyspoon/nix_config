@@ -46,6 +46,11 @@
       flake = false;
     };
 
+    agent-browser = {
+      url = "github:vercel-labs/agent-browser";
+      flake = false;
+    };
+
     # OpenCode plugins
     opencode-notify = {
       url = "github:kdcokenny/opencode-notify";
@@ -122,6 +127,7 @@
         overlays.default = _final: prev: {
           inherit
             (self.packages.${prev.stdenv.hostPlatform.system})
+            agent-browser
             nvim-lazyvim
             ;
         };
@@ -193,7 +199,12 @@
         formatter = pkgs.alejandra;
 
         packages = {
+          agent-browser = pkgs.callPackage ./pkgs/agent-browser {
+            inherit inputs;
+          };
+
           nvim-lazyvim = pkgs.writeShellScriptBin "nvim-lazyvim" ''
+
             set -euo pipefail
 
             export XDG_CONFIG_HOME="${lazyvimConfig}/config"

@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "agent-browser": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768588078,
+        "narHash": "sha256-ocLxt9T+lMHcucChzIZWl2G+kRqshO5rZxjnf3vCnPY=",
+        "owner": "vercel-labs",
+        "repo": "agent-browser",
+        "rev": "1f31452fea257db2874a2d2bd94da1de15b9ab1e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vercel-labs",
+        "repo": "agent-browser",
+        "type": "github"
+      }
+    },
     "firefox-addons": {
       "inputs": {
         "nixpkgs": [
@@ -163,6 +179,7 @@
     },
     "root": {
       "inputs": {
+        "agent-browser": "agent-browser",
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",

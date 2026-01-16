@@ -1,12 +1,11 @@
-{
-  config,
-  inputs,
-  ...
-}: let
+{config, ...}: let
   bellPath = "${config.xdg.configHome}/opencode/opencode-bell.md";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
+
+    # Disable permission prompts (always allow).
+    permission = "allow";
 
     # Disable noisy LSP servers
     lsp = {
@@ -17,11 +16,19 @@
     mcp = {
       shadcn = {
         type = "local";
-        command = ["npx" "shadcn@latest" "mcp"];
+        command = [
+          "npx"
+          "shadcn@latest"
+          "mcp"
+        ];
       };
       datadog = {
         type = "local";
-        command = ["npx" "-y" "@winor30/mcp-server-datadog"];
+        command = [
+          "npx"
+          "-y"
+          "@winor30/mcp-server-datadog"
+        ];
         # Reads from environment variables - set DATADOG_API_KEY, DATADOG_APP_KEY, DD_SITE
       };
     };
@@ -54,7 +61,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -92,7 +102,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -125,7 +138,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -158,7 +174,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -186,7 +205,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -209,7 +231,10 @@
               output = 128000;
             };
             modalities = {
-              input = ["text" "image"];
+              input = [
+                "text"
+                "image"
+              ];
               output = ["text"];
             };
             variants = {
@@ -474,13 +499,8 @@ in {
       recursive = true;
     };
 
-    # Plugins from flake inputs (declarative, auto-update with `nix flake update`)
-    # NOTE: notify plugin removed - requires npm deps (node-notifier, detect-terminal)
-    # Install via: ocx ghost add kdco/notify
-    "opencode/plugin/mystatus.ts".source = "${inputs.opencode-mystatus}/plugin/mystatus.ts";
-    "opencode/plugin/lib".source = "${inputs.opencode-mystatus}/plugin/lib";
-
-    # Command from mystatus
-    "opencode/command/mystatus.md".source = "${inputs.opencode-mystatus}/command/mystatus.md";
+    # NOTE: Plugins must be installed via OCX (they need npm deps at runtime)
+    # Install mystatus: ocx ghost add npm:opencode-mystatus
+    # Install notify: ocx ghost add kdco/notify
   };
 }

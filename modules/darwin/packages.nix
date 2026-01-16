@@ -40,6 +40,12 @@
 
     # Nix tools
     nil # Nix LSP
+    nix-output-monitor
+    nix-tree
+    nix-diff
+    nix-index
+    cachix
+    nix-melt
     alejandra
     statix
     deadnix
