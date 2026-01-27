@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  config,
   ...
 }: {
   home.packages = with pkgs; [
@@ -61,7 +62,7 @@
     fi
 
     # Ensure binstall-installed binaries are reachable.
-    export PATH="/run/current-system/sw/bin:$HOME/.cargo/bin:$PATH"
+    export PATH="${config.home.profileDirectory}/bin:$HOME/.cargo/bin:$PATH"
 
     export BINSTALL_DISABLE_TELEMETRY=1
 

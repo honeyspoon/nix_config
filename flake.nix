@@ -1,8 +1,9 @@
 {
-  description = "Abder's Nix Darwin Configuration";
+  description = "Abder's Nix Configuration (macOS + Linux)";
 
   inputs = {
-    # Keep Nixpkgs aligned with nix-darwin 25.11 (avoid local builds like LLVM).
+    # Use darwin branch for compatibility with nix-darwin
+    # This also works fine on Linux
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
 
     flake-parts = {
@@ -65,6 +66,7 @@
 
   outputs = inputs @ {
     self,
+    nixpkgs,
     nix-darwin,
     home-manager,
     sops-nix,
@@ -76,52 +78,89 @@
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "aarch64-darwin"
+        "x86_64-darwin"
+        "x86_64-linux"
+        "aarch64-linux"
       ];
 
       flake = let
-        user = {
+        # User config - shared across platforms
+        mkUser = system: let
+          isDarwin = builtins.match ".*-darwin" system != null;
+        in {
           name = "abder";
-          home = "/Users/abder";
+          home =
+            if isDarwin
+            then "/Users/abder"
+            else "/home/abder";
         };
 
-        host = "workmbp";
+        # Shared home-manager modules
+        sharedHmModules = [
+          sops-nix.homeManagerModules.sops
+          nix-index-database.homeModules.nix-index
+          zen-browser.homeModules.twilight
+          ./modules/home-manager/secrets.nix
+        ];
+
+        # Darwin host
+        darwinHost = "workmbp";
       in {
-        # Build darwin flake using:
-        # $ darwin-rebuild build --flake .#${host}
-        darwinConfigurations.${host} = nix-darwin.lib.darwinSystem {
-          specialArgs = {inherit user host;};
+        # macOS: Build darwin flake using:
+        # $ darwin-rebuild build --flake .#workmbp
+        darwinConfigurations.${darwinHost} = let
           system = "aarch64-darwin";
-          modules = [
-            ./modules/darwin/configuration.nix
+          user = mkUser system;
+          host = darwinHost;
+        in
+          nix-darwin.lib.darwinSystem {
+            specialArgs = {inherit user host;};
+            inherit system;
+            modules = [
+              ./modules/darwin/configuration.nix
 
-            # Expose wrapped apps as pkgs.* within nix-darwin
-            {nixpkgs.overlays = [self.overlays.default];}
+              # Expose wrapped apps as pkgs.* within nix-darwin
+              {nixpkgs.overlays = [self.overlays.default];}
 
-            # Home Manager module
-            home-manager.darwinModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
+              # Home Manager module
+              home-manager.darwinModules.home-manager
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
 
-                # When Home Manager is enabled as a nix-darwin module, it will refuse
-                # to overwrite pre-existing dotfiles. Back them up once so the first
-                # `darwin-switch` succeeds.
-                backupFileExtension = "before-nix-home-manager";
+                  # Back up pre-existing dotfiles once so the first `darwin-switch` succeeds.
+                  backupFileExtension = "before-nix-home-manager";
 
-                extraSpecialArgs = {inherit user host inputs;};
+                  extraSpecialArgs = {inherit user host inputs;};
+                  sharedModules = sharedHmModules;
+                  users.${user.name} = import ./modules/home-manager/home.nix;
+                };
+              }
+            ];
+          };
 
-                sharedModules = [
-                  sops-nix.homeManagerModules.sops
-                  nix-index-database.homeModules.nix-index
-                  zen-browser.homeModules.twilight
-                  ./modules/home-manager/secrets.nix
+        # Linux: Standalone home-manager configurations
+        # Apply with: home-manager switch --flake .#abder@linux
+        homeConfigurations = let
+          mkHomeConfig = system: let
+            user = mkUser system;
+            host = "linux";
+            pkgs = nixpkgs.legacyPackages.${system};
+          in
+            home-manager.lib.homeManagerConfiguration {
+              inherit pkgs;
+              extraSpecialArgs = {inherit user host inputs;};
+              modules =
+                sharedHmModules
+                ++ [
+                  {nixpkgs.overlays = [self.overlays.default];}
+                  ./modules/home-manager/home.nix
                 ];
-
-                users.${user.name} = import ./modules/home-manager/home.nix;
-              };
-            }
-          ];
+            };
+        in {
+          "abder@linux" = mkHomeConfig "x86_64-linux";
+          "abder@linux-arm" = mkHomeConfig "aarch64-linux";
         };
 
         overlays.default = _final: prev: {
@@ -181,15 +220,20 @@
         '';
 
         host = "workmbp";
+        isDarwin = builtins.match ".*-darwin" system != null;
         darwinRebuild = "${nix-darwin.packages.${system}.default}/bin/darwin-rebuild";
 
         # Evaluate the full nix-darwin configuration during `nix flake check`
         # so module/option errors surface early, without forcing a full build.
-        darwinEval = pkgs.runCommand "darwin-eval" {} (
-          builtins.seq self.darwinConfigurations.${host}.system ''
-            echo ok > $out
-          ''
-        );
+        darwinEval =
+          if isDarwin
+          then
+            pkgs.runCommand "darwin-eval" {} (
+              builtins.seq self.darwinConfigurations.${host}.system ''
+                echo ok > $out
+              ''
+            )
+          else pkgs.runCommand "darwin-eval-skip" {} "echo skipped > $out";
 
         lazyvimConfig = pkgs.runCommand "lazyvim-config" {} ''
           mkdir -p "$out/config"
@@ -243,155 +287,197 @@
           shellHook = devShellHook;
         };
 
-        apps = {
-          darwin-build = {
-            type = "app";
-            program = "${pkgs.writeShellScriptBin "darwin-build" ''
-              set -euo pipefail
+        apps =
+          {
+            nvim-lazyvim = {
+              type = "app";
+              program = "${self.packages.${system}.nvim-lazyvim}/bin/nvim-lazyvim";
+              meta.description = "Run Neovim with vendored LazyVim config";
+            };
 
-              if [ -n "''${FLAKE_DIR:-}" ]; then
-                flake_dir="$FLAKE_DIR"
-              elif command -v git >/dev/null 2>&1; then
-                flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-              else
-                flake_dir=""
-              fi
+            check-deprecations = {
+              type = "app";
+              program = "${pkgs.writeShellScriptBin "check-deprecations" ''
+                set -euo pipefail
 
-              if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
-                flake_dir="$HOME/nix-config"
-              fi
+                tmp="$(mktemp)"
+                trap 'rm -f "$tmp"' EXIT
 
-              if [ ! -e "$flake_dir/flake.nix" ]; then
-                echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
-                exit 2
-              fi
+                # Evaluate checks (no builds) and capture warnings.
+                nix flake check -L --no-build 2>"$tmp" || true
 
-              exec ${darwinRebuild} build --flake "$flake_dir#${host}"
-            ''}/bin/darwin-build";
-            meta.description = "Build nix-darwin system (no switch)";
-          };
+                ignored_re='lib\.cli\.toGNUCommandLine(Shell)? is deprecated'
 
-          darwin-switch = {
-            type = "app";
-            program = "${pkgs.writeShellScriptBin "darwin-switch" ''
-              set -euo pipefail
+                if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" | ${pkgs.ripgrep}/bin/rg -v "$ignored_re"; then
+                  echo "\nFound actionable deprecations above. Fix them and re-run." >&2
+                  exit 1
+                fi
 
-              if [ -n "''${FLAKE_DIR:-}" ]; then
-                flake_dir="$FLAKE_DIR"
-              elif command -v git >/dev/null 2>&1; then
-                flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-              else
-                flake_dir=""
-              fi
+                if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp"; then
+                  echo "Only upstream deprecations found (currently ignored):" >&2
+                  ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" >&2 || true
+                else
+                  echo "No deprecation warnings found."
+                fi
+              ''}/bin/check-deprecations";
+              meta.description = "List config deprecations (ignores known upstream warnings)";
+            };
+          }
+          // (
+            if isDarwin
+            then {
+              darwin-build = {
+                type = "app";
+                program = "${pkgs.writeShellScriptBin "darwin-build" ''
+                  set -euo pipefail
 
-              if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
-                flake_dir="$HOME/nix-config"
-              fi
-
-              if [ ! -e "$flake_dir/flake.nix" ]; then
-                echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
-                exit 2
-              fi
-
-              flake_ref="$flake_dir#${host}"
-
-              # One-time safety: if you have pre-existing /etc files from a
-              # different Nix installer, nix-darwin will refuse to overwrite them.
-              # We back them up once using the convention it suggests.
-              exec sudo -H env FLAKE_REF="$flake_ref" ${pkgs.bash}/bin/bash -lc '
-                for f in /etc/nix/nix.conf /etc/shells; do
-                  if [ -e "$f" ] && [ ! -L "$f" ]; then
-                    backup="$f.before-nix-darwin"
-                    if [ -e "$backup" ]; then
-                      backup="$backup.$(/bin/date +%Y%m%d%H%M%S)"
-                    fi
-                    mv "$f" "$backup"
+                  if [ -n "''${FLAKE_DIR:-}" ]; then
+                    flake_dir="$FLAKE_DIR"
+                  elif command -v git >/dev/null 2>&1; then
+                    flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+                  else
+                    flake_dir=""
                   fi
-                done
-                exec ${darwinRebuild} switch --flake "$FLAKE_REF"
-              '
-            ''}/bin/darwin-switch";
-            meta.description = "Switch nix-darwin system (requires sudo)";
-          };
 
-          nvim-lazyvim = {
-            type = "app";
-            program = "${self.packages.${system}.nvim-lazyvim}/bin/nvim-lazyvim";
-            meta.description = "Run Neovim with vendored LazyVim config";
-          };
+                  if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+                    flake_dir="$HOME/nix-config"
+                  fi
 
-          check-deprecations = {
-            type = "app";
-            program = "${pkgs.writeShellScriptBin "check-deprecations" ''
-              set -euo pipefail
+                  if [ ! -e "$flake_dir/flake.nix" ]; then
+                    echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
+                    exit 2
+                  fi
 
-              tmp="$(mktemp)"
-              trap 'rm -f "$tmp"' EXIT
+                  exec ${darwinRebuild} build --flake "$flake_dir#${host}"
+                ''}/bin/darwin-build";
+                meta.description = "Build nix-darwin system (no switch)";
+              };
 
-              # Evaluate checks (no builds) and capture warnings.
-              nix flake check -L --no-build 2>"$tmp" || true
+              darwin-switch = {
+                type = "app";
+                program = "${pkgs.writeShellScriptBin "darwin-switch" ''
+                  set -euo pipefail
 
-              ignored_re='lib\.cli\.toGNUCommandLine(Shell)? is deprecated'
+                  if [ -n "''${FLAKE_DIR:-}" ]; then
+                    flake_dir="$FLAKE_DIR"
+                  elif command -v git >/dev/null 2>&1; then
+                    flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+                  else
+                    flake_dir=""
+                  fi
 
-              if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" | ${pkgs.ripgrep}/bin/rg -v "$ignored_re"; then
-                echo "\nFound actionable deprecations above. Fix them and re-run." >&2
-                exit 1
-              fi
+                  if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+                    flake_dir="$HOME/nix-config"
+                  fi
 
-              if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp"; then
-                echo "Only upstream deprecations found (currently ignored):" >&2
-                ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" >&2 || true
-              else
-                echo "No deprecation warnings found."
-              fi
-            ''}/bin/check-deprecations";
-            meta.description = "List config deprecations (ignores known upstream warnings)";
-          };
+                  if [ ! -e "$flake_dir/flake.nix" ]; then
+                    echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
+                    exit 2
+                  fi
 
-          check-darwin-deprecations = {
-            type = "app";
-            program = "${pkgs.writeShellScriptBin "check-darwin-deprecations" ''
-              set -euo pipefail
+                  flake_ref="$flake_dir#${host}"
 
-              tmp="$(mktemp)"
-              trap 'rm -f "$tmp"' EXIT
+                  # One-time safety: if you have pre-existing /etc files from a
+                  # different Nix installer, nix-darwin will refuse to overwrite them.
+                  # We back them up once using the convention it suggests.
+                  exec sudo -H env FLAKE_REF="$flake_ref" ${pkgs.bash}/bin/bash -lc '
+                    for f in /etc/nix/nix.conf /etc/shells; do
+                      if [ -e "$f" ] && [ ! -L "$f" ]; then
+                        backup="$f.before-nix-darwin"
+                        if [ -e "$backup" ]; then
+                          backup="$backup.$(/bin/date +%Y%m%d%H%M%S)"
+                        fi
+                        mv "$f" "$backup"
+                      fi
+                    done
+                    exec ${darwinRebuild} switch --flake "$FLAKE_REF"
+                  '
+                ''}/bin/darwin-switch";
+                meta.description = "Switch nix-darwin system (requires sudo)";
+              };
 
-              flake_dir=""
-              if [ -n "''${FLAKE_DIR:-}" ]; then
-                flake_dir="$FLAKE_DIR"
-              elif command -v git >/dev/null 2>&1; then
-                flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-              fi
+              check-darwin-deprecations = {
+                type = "app";
+                program = "${pkgs.writeShellScriptBin "check-darwin-deprecations" ''
+                  set -euo pipefail
 
-              if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
-                flake_dir="$HOME/nix-config"
-              fi
+                  tmp="$(mktemp)"
+                  trap 'rm -f "$tmp"' EXIT
 
-              flake_ref="$flake_dir#${host}"
+                  flake_dir=""
+                  if [ -n "''${FLAKE_DIR:-}" ]; then
+                    flake_dir="$FLAKE_DIR"
+                  elif command -v git >/dev/null 2>&1; then
+                    flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+                  fi
 
-              set +e
-              ${darwinRebuild} build --flake "$flake_ref" 2>"$tmp"
-              status=$?
-              set -e
+                  if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+                    flake_dir="$HOME/nix-config"
+                  fi
 
-              ignored_re='lib\.cli\.toGNUCommandLine(Shell)? is deprecated'
+                  flake_ref="$flake_dir#${host}"
 
-              if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" | ${pkgs.ripgrep}/bin/rg -v "$ignored_re"; then
-                echo "\nFound actionable deprecations above. Fix them and re-run." >&2
-                exit 1
-              fi
+                  set +e
+                  ${darwinRebuild} build --flake "$flake_ref" 2>"$tmp"
+                  status=$?
+                  set -e
 
-              if [ $status -ne 0 ]; then
-                echo "darwin build failed (exit $status)." >&2
-                ${pkgs.ripgrep}/bin/rg -n "error:" "$tmp" >&2 || true
-                exit $status
-              fi
+                  ignored_re='lib\.cli\.toGNUCommandLine(Shell)? is deprecated'
 
-              echo "No actionable deprecations found in darwin build output."
-            ''}/bin/check-darwin-deprecations";
-            meta.description = "Check deprecations emitted by darwin-rebuild build";
-          };
-        };
+                  if ${pkgs.ripgrep}/bin/rg -n "deprecated" "$tmp" | ${pkgs.ripgrep}/bin/rg -v "$ignored_re"; then
+                    echo "\nFound actionable deprecations above. Fix them and re-run." >&2
+                    exit 1
+                  fi
+
+                  if [ $status -ne 0 ]; then
+                    echo "darwin build failed (exit $status)." >&2
+                    ${pkgs.ripgrep}/bin/rg -n "error:" "$tmp" >&2 || true
+                    exit $status
+                  fi
+
+                  echo "No actionable deprecations found in darwin build output."
+                ''}/bin/check-darwin-deprecations";
+                meta.description = "Check deprecations emitted by darwin-rebuild build";
+              };
+            }
+            else {
+              # Linux-specific apps
+              home-switch = {
+                type = "app";
+                program = "${pkgs.writeShellScriptBin "home-switch" ''
+                  set -euo pipefail
+
+                  if [ -n "''${FLAKE_DIR:-}" ]; then
+                    flake_dir="$FLAKE_DIR"
+                  elif command -v git >/dev/null 2>&1; then
+                    flake_dir="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+                  else
+                    flake_dir=""
+                  fi
+
+                  if [ -z "$flake_dir" ] || [ ! -e "$flake_dir/flake.nix" ]; then
+                    flake_dir="$HOME/nix-config"
+                  fi
+
+                  if [ ! -e "$flake_dir/flake.nix" ]; then
+                    echo "Could not find flake.nix. Run from the repo, or set FLAKE_DIR." >&2
+                    exit 2
+                  fi
+
+                  # Detect architecture
+                  arch="$(uname -m)"
+                  if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then
+                    config="abder@linux-arm"
+                  else
+                    config="abder@linux"
+                  fi
+
+                  exec ${home-manager.packages.${system}.default}/bin/home-manager switch --flake "$flake_dir#$config"
+                ''}/bin/home-switch";
+                meta.description = "Switch home-manager configuration on Linux";
+              };
+            }
+          );
       };
     };
 }

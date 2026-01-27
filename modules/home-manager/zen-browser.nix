@@ -1,15 +1,17 @@
 {
+  lib,
   pkgs,
   inputs,
   ...
 }: let
   addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
+  inherit (pkgs.stdenv) isDarwin;
 in {
   programs.zen-browser = {
     enable = true;
 
-    # Required for macOS
-    darwinDefaultsId = "io.github.nicotine17.nicotine17";
+    # Required for macOS only
+    darwinDefaultsId = lib.mkIf isDarwin "io.github.nicotine17.nicotine17";
 
     profiles.default = {
       isDefault = true;

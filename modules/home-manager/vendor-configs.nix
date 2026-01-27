@@ -1,13 +1,6 @@
+# Cross-platform vendored app configs
 _: {
-  # Vendored app configs from this repo.
   xdg.configFile = {
-    "karabiner/karabiner.json".source = ../../config/karabiner/karabiner.json;
-
-    "karabiner/assets/complex_modifications" = {
-      source = ../../config/karabiner/assets/complex_modifications;
-      recursive = true;
-    };
-
     "zed/settings.json".source = ../../config/zed/settings.json;
     "zed/keymap.json".source = ../../config/zed/keymap.json;
 
@@ -20,8 +13,6 @@ _: {
     "mcphub/servers.json".source = ../../config/mcphub/servers.json;
 
     "amp/settings.json".source = ../../config/amp/settings.json;
-
-    "aerospace/aerospace.toml".source = ../../config/aerospace/aerospace.toml;
 
     "ghostty/themes" = {
       source = ../../config/ghostty/themes;

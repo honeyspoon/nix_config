@@ -20,7 +20,7 @@
     # Keep in sync with nixpkgs docs; 3 is current stable.
     fetcherVersion = 3;
 
-    hash = "sha256-D/X7Z1o/cQ23/1wXixscBkIL4Kah4lIK+5/fGFqYDpo=";
+    hash = "sha256-0GTlb98FiWgjUpYNJW+2QqCr2WRqdZN7GhlJAwq0PTk=";
   };
 
   daemon = stdenv.mkDerivation {

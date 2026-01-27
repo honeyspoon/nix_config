@@ -1,3 +1,5 @@
+# Main home-manager entry point
+# Platform-specific modules are handled via lib.mkIf in each module
 _: {
   imports = [
     ./core.nix
@@ -16,5 +18,8 @@ _: {
     ./vendor-configs.nix
 
     ./activation-tools.nix
+
+    # macOS-specific modules (uses lib.mkIf inside)
+    ./darwin
   ];
 }
