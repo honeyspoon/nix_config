@@ -4,8 +4,7 @@
   config,
   ...
 }: let
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  inherit (pkgs.stdenv) isDarwin isLinux;
 in {
   home.packages = with pkgs;
     [

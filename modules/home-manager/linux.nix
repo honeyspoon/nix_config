@@ -2,10 +2,9 @@
 {
   lib,
   pkgs,
-  config,
   ...
 }: let
-  isLinux = pkgs.stdenv.isLinux;
+  inherit (pkgs.stdenv) isLinux;
 
   # Apt packages to install on Ubuntu/Debian
   # These are system-level dependencies that work better via apt

@@ -120,7 +120,10 @@
               ./modules/darwin/configuration.nix
 
               # Expose wrapped apps as pkgs.* within nix-darwin
-              {nixpkgs.overlays = [self.overlays.default];}
+              {
+                nixpkgs.config.allowUnfree = true;
+                nixpkgs.overlays = [self.overlays.default];
+              }
 
               # Home Manager module
               home-manager.darwinModules.home-manager
