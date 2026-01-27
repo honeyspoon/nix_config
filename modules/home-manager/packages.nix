@@ -3,54 +3,177 @@
   pkgs,
   config,
   ...
-}: {
-  home.packages = with pkgs; [
-    # Additional CLI tools
-    btop
-    htop
-    tree
-    wget
-    curl
-    jq
-    yq-go
+}: let
+  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+in {
+  home.packages = with pkgs;
+    [
+      # === CLI Tools ===
+      btop
+      htop
+      tree
+      wget
+      curl
+      jq
+      yq-go
+      watch
+      parallel
+      expect
 
-    # Network tools
-    nmap
-    wireshark
+      # === Network Tools ===
+      nmap
+      wireshark
+      mtr
 
-    # Archive tools
-    unzip
-    zip
-    gnutar
+      # === Archive Tools ===
+      unzip
+      zip
+      gnutar
+      p7zip
 
-    # Text processing
-    gnused
-    gawk
+      # === Text Processing ===
+      gnused
+      gawk
+      ripgrep
+      sd # sed alternative
 
-    # Modern alternatives
-    dust
-    duf
-    procs
+      # === Modern CLI Replacements ===
+      dust # du alternative
+      duf # df alternative
+      procs # ps alternative
+      fd # find alternative
+      bat # cat alternative
+      eza # ls alternative
+      delta # diff alternative
+      hyperfine # benchmarking
+      tokei # code stats
 
-    # Languages / runtimes
-    nodejs_20
-    python3
-    python3Packages.datadog # provides `dog` (Datadog dogshell) CLI
-    postgresql_17
-    uv
+      # === File Management ===
+      xplr # file explorer
+      yazi # terminal file manager
 
-    # Nix discoverability
-    comma
+      # === Git Tools ===
+      git
+      git-lfs
+      lazygit
+      gh # GitHub CLI
 
-    # Rust / Cargo CLI tools (installed via cargo-binstall)
-    cargo-binstall
+      # === Languages / Runtimes ===
+      # Rust
+      rustup
 
-    # Development
-    claude-code
-    agent-browser
-    pre-commit
-    shellcheck
-  ];
+      # Go
+      go
+
+      # Node.js
+      nodejs_20
+      bun
+      deno
+
+      # Python
+      python3
+      python3Packages.pip
+      python3Packages.datadog
+      uv
+      pipx
+
+      # Java
+      jdk21
+
+      # Zig
+      zig
+
+      # === Databases ===
+      postgresql_17
+      sqlite
+
+      # === Build Tools ===
+      cmake
+      gnumake
+      ninja
+      pkg-config
+      autoconf
+      automake
+      libtool
+
+      # === DevOps / Cloud ===
+      awscli2
+      terraform
+      opentofu
+      pulumi
+      kubectl
+      k9s
+      dive # docker image explorer
+      lazydocker
+
+      # === API / HTTP Tools ===
+      httpie
+      xh # httpie alternative
+      grpcurl
+      websocat
+
+      # === Data Tools ===
+      jless # json viewer
+      fx # json processor
+      csvkit
+
+      # === Security Tools ===
+      trivy
+      hadolint
+      shellcheck
+      mkcert
+
+      # === Misc Dev Tools ===
+      just # command runner
+      direnv
+      entr # file watcher
+      watchexec
+      act # GitHub Actions locally
+      scc # code counter
+
+      # === Terminal Tools ===
+      tmux
+      zellij
+      starship
+      fastfetch
+
+      # === Nix Tools ===
+      comma
+      nix-tree
+      nixfmt-rfc-style
+      statix
+      deadnix
+
+      # === Rust / Cargo CLI tools (installed via cargo-binstall) ===
+      cargo-binstall
+
+      # === AI / Development ===
+      claude-code
+      agent-browser
+      ollama
+
+      # === Pre-commit ===
+      pre-commit
+    ]
+    ++ lib.optionals isLinux [
+      # Linux-specific packages
+      gcc
+      glibc
+      binutils
+      patchelf
+
+      # Linux system tools
+      strace
+      ltrace
+      lsof
+      file
+    ]
+    ++ lib.optionals isDarwin [
+      # macOS-specific packages (most are via homebrew)
+      coreutils
+      findutils
+    ];
 
   home.activation.cargoBinstallRustTools = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if ! command -v cargo >/dev/null 2>&1; then
