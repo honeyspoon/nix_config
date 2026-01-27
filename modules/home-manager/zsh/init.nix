@@ -1,5 +1,10 @@
 {config, ...}: {
   programs.zsh.initContent = ''
+    # Fix ghostty TERM on Linux when terminfo is missing
+    if [[ "$TERM" == ghostty* || "$TERM" == xterm-ghostty* ]] && ! infocmp "$TERM" &>/dev/null; then
+      export TERM=xterm-256color
+    fi
+
     # Increase file descriptor limit for Rust builds
     ulimit -n 10240
 

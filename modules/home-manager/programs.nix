@@ -93,6 +93,10 @@
 
         # Enable RGB colour
         set-option -sa terminal-overrides ",xterm*:Tc"
+        set-option -sa terminal-overrides ",ghostty:Tc"
+
+        # Fix for ghostty terminal type on Linux (fallback if terminfo missing)
+        set-option -g default-terminal "tmux-256color"
       '';
     };
   };
