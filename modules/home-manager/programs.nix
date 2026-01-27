@@ -72,31 +72,133 @@
       historyLimit = 50000;
       keyMode = "vi";
       mouse = true;
-      prefix = "C-a";
-      terminal = "screen-256color";
+      prefix = "C-b";
+      terminal = "tmux-256color";
+      sensibleOnTop = true;
+
+      plugins = with pkgs.tmuxPlugins; [
+        sensible
+        yank
+        pain-control
+        vim-tmux-navigator
+        resurrect
+        {
+          plugin = continuum;
+          extraConfig = ''
+            set -g @continuum-restore 'on'
+            set -g @continuum-save-interval '10'
+          '';
+        }
+        {
+          plugin = catppuccin;
+          extraConfig = ''
+            # Catppuccin theme settings
+            set -g @catppuccin_flavor 'mocha'
+            set -g @catppuccin_window_status_style "rounded"
+
+            # Window format
+            set -g @catppuccin_window_number_position "left"
+            set -g @catppuccin_window_default_fill "number"
+            set -g @catppuccin_window_default_text "#W"
+            set -g @catppuccin_window_current_fill "number"
+            set -g @catppuccin_window_current_text "#W"
+
+            # Status bar
+            set -g @catppuccin_status_background "default"
+            set -g @catppuccin_status_left_separator  " "
+            set -g @catppuccin_status_right_separator ""
+            set -g @catppuccin_status_fill "icon"
+            set -g @catppuccin_status_connect_separator "no"
+
+            # Status modules
+            set -g @catppuccin_status_modules_right "directory session"
+            set -g @catppuccin_directory_text "#{pane_current_path}"
+          '';
+        }
+      ];
 
       extraConfig = ''
-        # Split panes using | and -
-        bind | split-window -h
-        bind - split-window -v
+        # True color support
+        set -ag terminal-overrides ",xterm-256color:RGB"
+        set -ag terminal-overrides ",*256col*:RGB"
+        set -ag terminal-overrides ",ghostty:RGB"
+        set -ag terminal-overrides ",xterm-ghostty:RGB"
+
+        # Split panes using | and - in current directory
+        bind | split-window -h -c "#{pane_current_path}"
+        bind - split-window -v -c "#{pane_current_path}"
+        bind c new-window -c "#{pane_current_path}"
         unbind '"'
         unbind %
 
         # Reload config
-        bind r source-file ~/.config/tmux/tmux.conf
+        bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
 
-        # Switch panes using Alt-arrow without prefix
+        # Vim-style pane selection
+        bind h select-pane -L
+        bind j select-pane -D
+        bind k select-pane -U
+        bind l select-pane -R
+
+        # Resize panes with Ctrl+hjkl
+        bind -r C-h resize-pane -L 5
+        bind -r C-j resize-pane -D 5
+        bind -r C-k resize-pane -U 5
+        bind -r C-l resize-pane -R 5
+
+        # Alt-arrow to switch panes without prefix
         bind -n M-Left select-pane -L
         bind -n M-Right select-pane -R
         bind -n M-Up select-pane -U
         bind -n M-Down select-pane -D
 
-        # Enable RGB colour
-        set-option -sa terminal-overrides ",xterm*:Tc"
-        set-option -sa terminal-overrides ",ghostty:Tc"
+        # Shift-arrow to switch windows without prefix
+        bind -n S-Left previous-window
+        bind -n S-Right next-window
 
-        # Fix for ghostty terminal type on Linux (fallback if terminfo missing)
-        set-option -g default-terminal "tmux-256color"
+        # Easy window reordering
+        bind -r "<" swap-window -d -t -1
+        bind -r ">" swap-window -d -t +1
+
+        # Don't rename windows automatically
+        set -g allow-rename off
+
+        # Renumber windows when one is closed
+        set -g renumber-windows on
+
+        # Set title
+        set -g set-titles on
+        set -g set-titles-string "#T"
+
+        # Activity monitoring
+        set -g monitor-activity on
+        set -g visual-activity off
+
+        # Vi copy mode improvements
+        bind -T copy-mode-vi v send-keys -X begin-selection
+        bind -T copy-mode-vi C-v send-keys -X rectangle-toggle
+        bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
+        # Fast window switching
+        bind -n M-1 select-window -t 1
+        bind -n M-2 select-window -t 2
+        bind -n M-3 select-window -t 3
+        bind -n M-4 select-window -t 4
+        bind -n M-5 select-window -t 5
+        bind -n M-6 select-window -t 6
+        bind -n M-7 select-window -t 7
+        bind -n M-8 select-window -t 8
+        bind -n M-9 select-window -t 9
+
+        # Focus events for vim
+        set -g focus-events on
+
+        # Longer status messages
+        set -g display-time 2000
+        set -g display-panes-time 2000
+
+        # Status bar position
+        set -g status-position top
       '';
     };
   };
