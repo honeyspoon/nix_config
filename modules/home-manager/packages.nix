@@ -34,6 +34,7 @@
     # Languages / runtimes
     nodejs_20
     python3
+    python3Packages.datadog # provides `dog` (Datadog dogshell) CLI
     postgresql_17
     uv
 

@@ -23,6 +23,15 @@ in {
           export OPENAI_API_KEY="$(_load_sops_secret openai_api_key)"
         fi
 
+        # Vercel AI Gateway (for Anthropic)
+        if [ -z "''${ANTHROPIC_CUSTOM_HEADERS:-}" ]; then
+          _ai_gw_key="$(_load_sops_secret ai_gateway_api_key)"
+          if [ -n "$_ai_gw_key" ]; then
+            export ANTHROPIC_CUSTOM_HEADERS="x-ai-gateway-api-key: Bearer $_ai_gw_key"
+          fi
+          unset _ai_gw_key
+        fi
+
         # Datadog
         if [ -z "''${DATADOG_API_KEY:-}" ]; then
           export DATADOG_API_KEY="$(_load_sops_secret datadog_api_key)"
@@ -32,6 +41,23 @@ in {
         fi
         if [ -z "''${DD_SITE:-}" ]; then
           export DD_SITE="$(_load_sops_secret datadog_site)"
+        fi
+
+        # Dogshell (Datadog CLI `dog`) config
+        # Docs: https://docs.datadoghq.com/developers/guide/dogshell/
+        if [ ! -e "$HOME/.dogrc" ] && [ -n "''${DATADOG_API_KEY:-}" ] && [ -n "''${DATADOG_APP_KEY:-}" ]; then
+          umask 077
+
+          api_host="https://api.''${DD_SITE:-datadoghq.com}"
+
+          printf '%s\n' \
+            "[Connection]" \
+            "apikey = ''${DATADOG_API_KEY}" \
+            "appkey = ''${DATADOG_APP_KEY}" \
+            "api_host = ''${api_host}" \
+            >"$HOME/.dogrc"
+
+          chmod 600 "$HOME/.dogrc" 2>/dev/null || true
         fi
 
         unset -f _load_sops_secret
