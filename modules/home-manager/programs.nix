@@ -124,11 +124,10 @@
         set -ag terminal-overrides ",ghostty:RGB"
         set -ag terminal-overrides ",xterm-ghostty:RGB"
 
-        # Split panes using | and - in current directory
+        # Split panes: | for vertical (side-by-side), " for horizontal (stacked)
         bind | split-window -h -c "#{pane_current_path}"
-        bind - split-window -v -c "#{pane_current_path}"
+        bind '"' split-window -v -c "#{pane_current_path}"
         bind c new-window -c "#{pane_current_path}"
-        unbind '"'
         unbind %
 
         # Reload config
