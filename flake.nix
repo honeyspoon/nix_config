@@ -62,6 +62,12 @@
       url = "github:vbgate/opencode-mystatus";
       flake = false;
     };
+
+    # Rust toolchain
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -119,11 +125,8 @@
             modules = [
               ./modules/darwin/configuration.nix
 
-              # Expose wrapped apps as pkgs.* within nix-darwin
-              {
-                nixpkgs.config.allowUnfree = true;
-                nixpkgs.overlays = [self.overlays.default];
-              }
+              # Expose wrapped apps and rust toolchain as pkgs.* within nix-darwin
+              {nixpkgs.overlays = [inputs.rust-overlay.overlays.default self.overlays.default];}
 
               # Home Manager module
               home-manager.darwinModules.home-manager
@@ -152,6 +155,10 @@
             pkgs = import nixpkgs {
               inherit system;
               config.allowUnfree = true;
+              overlays = [
+                inputs.rust-overlay.overlays.default
+                self.overlays.default
+              ];
             };
           in
             home-manager.lib.homeManagerConfiguration {
@@ -160,7 +167,6 @@
               modules =
                 sharedHmModules
                 ++ [
-                  {nixpkgs.overlays = [self.overlays.default];}
                   ./modules/home-manager/home.nix
                 ];
             };

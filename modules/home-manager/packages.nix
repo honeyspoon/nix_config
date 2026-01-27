@@ -1,14 +1,119 @@
 {
   lib,
   pkgs,
-  config,
   ...
 }: let
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+
+  # Rust toolchain from rust-overlay
+  rustToolchain = pkgs.rust-bin.stable.latest.default.override {
+    extensions = ["rust-src" "rust-analyzer" "clippy" "rustfmt"];
+    targets = ["wasm32-unknown-unknown" "wasm32-wasip1"];
+  };
 in {
   home.packages = with pkgs;
     [
-      # === CLI Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # RUST TOOLCHAIN (from rust-overlay)
+      # ══════════════════════════════════════════════════════════════════
+      rustToolchain
+
+      # Cargo tools (from nixpkgs)
+      cargo-audit
+      cargo-bloat
+      cargo-deny
+      cargo-edit # cargo add/rm/upgrade
+      cargo-expand
+      cargo-flamegraph
+      cargo-generate
+      cargo-machete
+      cargo-make
+      cargo-modules
+      cargo-nextest
+      cargo-outdated
+      cargo-release
+      cargo-sort
+      cargo-watch
+      cargo-zigbuild
+
+      # Rust utilities
+      bacon # background rust checker
+      sqlx-cli
+      trunk # WASM web dev
+      wasm-pack
+      wasm-bindgen-cli
+      leptosfmt
+
+      # ══════════════════════════════════════════════════════════════════
+      # OTHER LANGUAGES / RUNTIMES
+      # ══════════════════════════════════════════════════════════════════
+      # Go
+      go
+      gopls
+      golangci-lint
+      delve # debugger
+
+      # Node.js / JavaScript
+      nodejs_20
+      bun
+      deno
+      nodePackages.pnpm
+      nodePackages.typescript
+      nodePackages.typescript-language-server
+
+      # Python
+      python3
+      python3Packages.pip
+      python3Packages.virtualenv
+      uv
+      ruff # linter/formatter
+      pyright # type checker
+
+      # Java
+      jdk21
+      maven
+      gradle
+
+      # Zig
+      zig
+      zls # language server
+
+      # Lua (luajit only - lua conflicts with luajit)
+      luajit
+      luarocks
+
+      # ══════════════════════════════════════════════════════════════════
+      # BUILD TOOLS & DEVELOPMENT LIBRARIES
+      # ══════════════════════════════════════════════════════════════════
+      # Build essentials
+      cmake
+      gnumake
+      ninja
+      meson
+      pkg-config
+      autoconf
+      automake
+      libtool
+
+      # Common development libraries
+      openssl
+      openssl.dev
+      zlib
+      zlib.dev
+      libffi
+      readline
+
+      # ══════════════════════════════════════════════════════════════════
+      # DATABASES
+      # ══════════════════════════════════════════════════════════════════
+      postgresql_17
+      sqlite
+      redis
+
+      # ══════════════════════════════════════════════════════════════════
+      # CLI TOOLS
+      # ══════════════════════════════════════════════════════════════════
       btop
       htop
       tree
@@ -18,26 +123,37 @@ in {
       yq-go
       watch
       parallel
-      expect
 
-      # === Network Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # NETWORK TOOLS
+      # ══════════════════════════════════════════════════════════════════
       nmap
       wireshark
       mtr
+      bandwhich # bandwidth monitor
+      dogdns # dns client
 
-      # === Archive Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # ARCHIVE TOOLS
+      # ══════════════════════════════════════════════════════════════════
       unzip
       zip
       gnutar
       p7zip
+      zstd
+      xz
 
-      # === Text Processing ===
+      # ══════════════════════════════════════════════════════════════════
+      # TEXT PROCESSING
+      # ══════════════════════════════════════════════════════════════════
       gnused
       gawk
       ripgrep
       sd # sed alternative
 
-      # === Modern CLI Replacements ===
+      # ══════════════════════════════════════════════════════════════════
+      # MODERN CLI REPLACEMENTS
+      # ══════════════════════════════════════════════════════════════════
       dust # du alternative
       duf # df alternative
       procs # ps alternative
@@ -47,201 +163,168 @@ in {
       delta # diff alternative
       hyperfine # benchmarking
       tokei # code stats
+      oha # http load tester
 
-      # === File Management ===
+      # ══════════════════════════════════════════════════════════════════
+      # FILE MANAGEMENT
+      # ══════════════════════════════════════════════════════════════════
       xplr # file explorer
       yazi # terminal file manager
+      broot # tree explorer
 
-      # === Git Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # GIT TOOLS
+      # ══════════════════════════════════════════════════════════════════
       git
       git-lfs
       lazygit
       gh # GitHub CLI
+      difftastic # structural diff
+      git-absorb
 
-      # === Languages / Runtimes ===
-      # Rust
-      rustup
-
-      # Go
-      go
-
-      # Node.js
-      nodejs_20
-      bun
-      deno
-
-      # Python
-      python3
-      python3Packages.pip
-      python3Packages.datadog
-      uv
-      pipx
-
-      # Java
-      jdk21
-
-      # Zig
-      zig
-
-      # === Databases ===
-      postgresql_17
-      sqlite
-
-      # === Build Tools ===
-      cmake
-      gnumake
-      ninja
-      pkg-config
-      autoconf
-      automake
-      libtool
-
-      # === DevOps / Cloud ===
+      # ══════════════════════════════════════════════════════════════════
+      # DEVOPS / CLOUD
+      # ══════════════════════════════════════════════════════════════════
       awscli2
       terraform
       opentofu
       pulumi
       kubectl
+      kubectx
       k9s
+      helm
       dive # docker image explorer
       lazydocker
+      docker-compose
 
-      # === API / HTTP Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # API / HTTP TOOLS
+      # ══════════════════════════════════════════════════════════════════
       httpie
       xh # httpie alternative
       grpcurl
       websocat
+      curlie # curl with httpie syntax
 
-      # === Data Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # DATA TOOLS
+      # ══════════════════════════════════════════════════════════════════
       jless # json viewer
       fx # json processor
-      csvkit
+      dasel # json/yaml/toml query
+      miller # csv/json processing
 
-      # === Security Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # SECURITY TOOLS
+      # ══════════════════════════════════════════════════════════════════
       trivy
       hadolint
       shellcheck
       mkcert
+      age # encryption
+      sops
 
-      # === Misc Dev Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # MISC DEV TOOLS
+      # ══════════════════════════════════════════════════════════════════
       just # command runner
       direnv
       entr # file watcher
       watchexec
       act # GitHub Actions locally
       scc # code counter
+      cloc
+      hexyl # hex viewer
+      viu # image viewer in terminal
 
-      # === Terminal Tools ===
+      # ══════════════════════════════════════════════════════════════════
+      # TERMINAL TOOLS
+      # ══════════════════════════════════════════════════════════════════
       tmux
       zellij
       starship
       fastfetch
 
-      # === Nix Tools ===
-      comma
+      # ══════════════════════════════════════════════════════════════════
+      # NIX TOOLS
+      # ══════════════════════════════════════════════════════════════════
+      comma # run programs without installing
       nix-tree
+      nix-diff
       nixfmt-rfc-style
       statix
       deadnix
+      cachix
+      nix-prefetch-git
+      nix-output-monitor # nom
 
-      # === Rust / Cargo CLI tools (installed via cargo-binstall) ===
-      cargo-binstall
-
-      # === AI / Development ===
+      # ══════════════════════════════════════════════════════════════════
+      # AI / DEVELOPMENT
+      # ══════════════════════════════════════════════════════════════════
       claude-code
       agent-browser
       ollama
 
-      # === Pre-commit ===
+      # ══════════════════════════════════════════════════════════════════
+      # CODE QUALITY
+      # ══════════════════════════════════════════════════════════════════
       pre-commit
+      treefmt
     ]
     ++ lib.optionals isLinux [
-      # Linux-specific packages
+      # ════════════════════════════════════════════════════════════════
+      # LINUX-SPECIFIC PACKAGES
+      # ════════════════════════════════════════════════════════════════
+      # Compilers and build tools (gcc only - clang conflicts)
       gcc
-      glibc
       binutils
       patchelf
+      nix-ld # run unpatched binaries
 
-      # Linux system tools
+      # System debugging
       strace
       ltrace
       lsof
       file
+
+      # System libraries (headers for compilation)
+      glibc
+      glibc.dev
+      libcap
+
+      # Clipboard
+      xclip
+      xsel
+      wl-clipboard
     ]
     ++ lib.optionals isDarwin [
-      # macOS-specific packages (most are via homebrew)
+      # ════════════════════════════════════════════════════════════════
+      # MACOS-SPECIFIC PACKAGES
+      # ════════════════════════════════════════════════════════════════
       coreutils
       findutils
+      darwin.apple_sdk.frameworks.Security
+      darwin.apple_sdk.frameworks.CoreFoundation
+      darwin.apple_sdk.frameworks.CoreServices
     ];
 
-  home.activation.cargoBinstallRustTools = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    if ! command -v cargo >/dev/null 2>&1; then
-      exit 0
-    fi
+  # Set up environment variables for development
+  home.sessionVariables = {
+    # Rust
+    CARGO_HOME = "$HOME/.cargo";
+    RUSTUP_HOME = "$HOME/.rustup";
 
-    if ! command -v cargo-binstall >/dev/null 2>&1; then
-      exit 0
-    fi
+    # pkg-config
+    PKG_CONFIG_PATH = lib.mkIf isLinux "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.zlib.dev}/lib/pkgconfig";
 
-    # Ensure binstall-installed binaries are reachable.
-    export PATH="${config.home.profileDirectory}/bin:$HOME/.cargo/bin:$PATH"
+    # OpenSSL (for Rust builds that need it)
+    OPENSSL_DIR = lib.mkIf isLinux "${pkgs.openssl.dev}";
+    OPENSSL_LIB_DIR = lib.mkIf isLinux "${pkgs.openssl.out}/lib";
+    OPENSSL_INCLUDE_DIR = lib.mkIf isLinux "${pkgs.openssl.dev}/include";
+  };
 
-    export BINSTALL_DISABLE_TELEMETRY=1
-
-    missing=()
-
-    need() {
-      crate="$1"
-      bin="$2"
-
-      if ! command -v "$bin" >/dev/null 2>&1; then
-        missing+=("$crate")
-      fi
-    }
-
-    need bacon bacon
-
-    need cargo-audit cargo-audit
-    need cargo-bloat cargo-bloat
-    need cargo-deny cargo-deny
-    need cargo-edit cargo-add
-    need cargo-flamegraph cargo-flamegraph
-    need cargo-generate cargo-generate
-    need cargo-leptos cargo-leptos
-    need cargo-lambda cargo-lambda
-    need cargo-machete cargo-machete
-    need cargo-make cargo-make
-    need cargo-modules cargo-modules
-    need cargo-sort cargo-sort
-    need cargo-tauri cargo-tauri
-    need cargo-udeps cargo-udeps
-    need cargo-watch cargo-watch
-    need cargo-zigbuild cargo-zigbuild
-    need cargo-llvm-cov cargo-llvm-cov
-
-    need evcxr evcxr
-    need hurl hurl
-    need mdcat mdcat
-    need oha oha
-    need rust-cbindgen cbindgen
-    need rust-script rust-script
-    need sqlx-cli sqlx
-    need tokei tokei
-    need tokio-console tokio-console
-    need tree-sitter tree-sitter
-    need trunk trunk
-    need viu viu
-    need wasm-pack wasm-pack
-    need xan xan
-
-    if [ "''${#missing[@]}" -gt 0 ]; then
-      printf 'Installing %s rust tools via cargo-binstall...\n' "''${#missing[@]}" >&2
-
-      cargo binstall \
-        --no-confirm \
-        --disable-strategies compile \
-        --continue-on-failure \
-        "''${missing[@]}" || true
-    fi
-  '';
+  # Ensure cargo bin is in PATH
+  home.sessionPath = [
+    "$HOME/.cargo/bin"
+  ];
 }
