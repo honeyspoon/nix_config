@@ -21,5 +21,8 @@ _: {
 
     # macOS-specific modules (uses lib.mkIf inside)
     ./darwin
+
+    # Linux-specific modules (uses lib.mkIf inside)
+    ./linux.nix
   ];
 }
