@@ -16,6 +16,7 @@ _: {
     ./zen-browser.nix
     ./skills.nix
     ./vendor-configs.nix
+    ./ssh.nix
 
     ./activation-tools.nix
 

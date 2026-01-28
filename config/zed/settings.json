@@ -5,17 +5,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "ssh_connections": [
-    {
-      "host": "i-0f3513bed31126f97",
-      "args": [],
-      "projects": [
-        {
-          "paths": ["/home/ec2-user"]
-        }
-      ]
-    }
-  ],
+  // SSH connections configured locally (not in version control)
   "icon_theme": "Catppuccin Latte",
   "agent_servers": {
     "opencode": {

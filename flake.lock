@@ -24,11 +24,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1769486619,
-        "narHash": "sha256-MEBKRsOj9s65KRvvugu4i7ytW2eASk67pFDgxgwsEr4=",
+        "lastModified": 1769573039,
+        "narHash": "sha256-N6tV2jKnyDsdth7/tOeE5mQx4+zXltwyyYqWITreWLE=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "02ae5ccdcbe8defe6047840a7b46e67e215bef69",
+        "rev": "a113241e0e9e837d56b26a608976ac5f1488b17f",
         "type": "gitlab"
       },
       "original": {
@@ -63,12 +63,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1768949235,
-        "narHash": "sha256-TtjKgXyg1lMfh374w5uxutd6Vx2P/hU81aEhTxrO2cg=",
-        "rev": "75ed713570ca17427119e7e204ab3590cc3bf2a5",
-        "revCount": 5854,
+        "lastModified": 1769580047,
+        "narHash": "sha256-tNqCP/+2+peAXXQ2V8RwsBkenlfWMERb+Uy6xmevyhM=",
+        "rev": "366d78c2856de6ab3411c15c1cb4fb4c2bf5c826",
+        "revCount": 5855,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2511.5854%2Brev-75ed713570ca17427119e7e204ab3590cc3bf2a5/019bdd98-c10e-7a70-b114-e076ca100f2c/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2511.5855%2Brev-366d78c2856de6ab3411c15c1cb4fb4c2bf5c826/019c0331-86a3-7732-bd80-956dfeb5985a/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -217,11 +217,11 @@
     "skill-react-best-practices": {
       "flake": false,
       "locked": {
-        "lastModified": 1769452030,
-        "narHash": "sha256-Z5Ip1XEVV3zuob4VLe5sAwZzEKzSuE2XWLzFOexPqVU=",
+        "lastModified": 1769563162,
+        "narHash": "sha256-IX0E3sOO7nXnSe2OKIzzzcX8CcbGfXPQj1n+fVsrCwE=",
         "owner": "vercel-labs",
         "repo": "agent-skills",
-        "rev": "23a77cf47783bbc1b647d40b14c1f61e3413a629",
+        "rev": "6650c778d5c591d4196bf2e96038a00559ecd0bc",
         "type": "github"
       },
       "original": {
