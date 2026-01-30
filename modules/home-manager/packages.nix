@@ -275,22 +275,52 @@ in {
         # ════════════════════════════════════════════════════════════════
         # LINUX-SPECIFIC PACKAGES
         # ════════════════════════════════════════════════════════════════
-        # Compilers and build tools (gcc only - clang conflicts)
+        # Docker (CLI only - daemon needs system install)
+        docker
+        docker-buildx
+        docker-credential-helpers
+
+        # Compilers and build tools
         gcc
+        # clang/llvm excluded - conflicts with gcc (ld.bfd)
         binutils
         patchelf
         nix-ld # run unpatched binaries
+        gnupatch
+        bison
+        flex
+        gettext
+
+        # Additional build tools
+        ccache
+        bear # compilation database generator
+        gdb
+        valgrind
+        perf-tools
 
         # System debugging
         strace
         ltrace
         lsof
         file
+        sysstat # iostat, mpstat, etc
+        iotop
+        nethogs
 
         # System libraries (headers for compilation)
         glibc
         glibc.dev
         libcap
+        ncurses
+        ncurses.dev
+        bzip2
+        bzip2.dev
+        xz.dev
+        libxml2
+        libxml2.dev
+        libyaml
+        expat
+        expat.dev
 
         # Clipboard
         xclip
