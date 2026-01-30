@@ -5,7 +5,7 @@ _: {
 
       settings = {
         user = {
-          name = "Abderahmane Bouziane";
+          name = "abder";
           email = "bobmatt911@gmail.com";
         };
 
