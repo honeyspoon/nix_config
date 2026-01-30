@@ -7,87 +7,90 @@
   secretsFile = ../../secrets/secrets.yaml;
   secretsPath = "${user.home}/nix-config/secrets/secrets.yaml";
   ageKeyFile = "${user.home}/.config/sops/age/keys.txt";
+  cacheDir = "${user.home}/.cache/sops-secrets";
+  cacheFile = "${cacheDir}/decrypted.json";
 in {
   # Decrypt secrets directly in shell init (workaround for sops-nix launchd PATH issue on macOS)
+  # Optimized: decrypt once and cache, extract all values with jq
   programs.zsh.initContent = lib.mkIf (builtins.pathExists secretsFile) (
     lib.mkAfter ''
-            # Load secrets from sops-encrypted file
+            # Load secrets from sops-encrypted file (cached for fast shell startup)
             if [ -r "${secretsPath}" ] && [ -r "${ageKeyFile}" ]; then
-              _load_sops_secret() {
-                local key="$1"
-                ${pkgs.sops}/bin/sops -d --extract '["'"$key"'"]' "${secretsPath}" 2>/dev/null
-              }
+              _sops_cache="${cacheFile}"
+              _sops_src="${secretsPath}"
 
-              # OpenAI
-              if [ -z "''${OPENAI_API_KEY:-}" ]; then
-                export OPENAI_API_KEY="$(_load_sops_secret openai_api_key)"
+              # Regenerate cache if secrets file is newer or cache doesn't exist
+              if [ ! -f "$_sops_cache" ] || [ "$_sops_src" -nt "$_sops_cache" ]; then
+                mkdir -p "${cacheDir}"
+                chmod 700 "${cacheDir}"
+                ${pkgs.sops}/bin/sops -d --output-type json "$_sops_src" > "$_sops_cache" 2>/dev/null
+                chmod 600 "$_sops_cache"
               fi
 
-              # Vercel AI Gateway (for Anthropic)
-              if [ -z "''${ANTHROPIC_CUSTOM_HEADERS:-}" ]; then
-                _ai_gw_key="$(_load_sops_secret ai_gateway_api_key)"
-                if [ -n "$_ai_gw_key" ]; then
-                  export ANTHROPIC_CUSTOM_HEADERS="x-ai-gateway-api-key: Bearer $_ai_gw_key"
+              if [ -r "$_sops_cache" ]; then
+                # Extract all secrets in one jq call
+                eval "$(${pkgs.jq}/bin/jq -r '
+                  @sh "
+                    _openai_api_key=\(.openai_api_key // "")
+                    _ai_gateway_api_key=\(.ai_gateway_api_key // "")
+                    _datadog_api_key=\(.datadog_api_key // "")
+                    _datadog_app_key=\(.datadog_app_key // "")
+                    _datadog_site=\(.datadog_site // "")
+                    _ssh_perf_bench_host=\(.ssh_perf_bench_host // "")
+                    _ssh_zuck_test_host=\(.ssh_zuck_test_host // "")
+                    _ssh_gpu_test_host=\(.ssh_gpu_test_host // "")
+                    _ssh_abder_dev_host=\(.ssh_abder_dev_host // "")
+                    _ssh_abder_dev_instance=\(.ssh_abder_dev_instance // "")
+                    _ssh_ssm_instance=\(.ssh_ssm_instance // "")
+                  "
+                ' "$_sops_cache")"
+
+                # Export environment variables (only if not already set)
+                [ -z "''${OPENAI_API_KEY:-}" ] && export OPENAI_API_KEY="$_openai_api_key"
+
+                if [ -z "''${ANTHROPIC_CUSTOM_HEADERS:-}" ] && [ -n "$_ai_gateway_api_key" ]; then
+                  export ANTHROPIC_CUSTOM_HEADERS="x-ai-gateway-api-key: Bearer $_ai_gateway_api_key"
                 fi
-                unset _ai_gw_key
-              fi
 
-              # Datadog
-              if [ -z "''${DATADOG_API_KEY:-}" ]; then
-                export DATADOG_API_KEY="$(_load_sops_secret datadog_api_key)"
-              fi
-              if [ -z "''${DATADOG_APP_KEY:-}" ]; then
-                export DATADOG_APP_KEY="$(_load_sops_secret datadog_app_key)"
-              fi
-              if [ -z "''${DD_SITE:-}" ]; then
-                export DD_SITE="$(_load_sops_secret datadog_site)"
-              fi
+                [ -z "''${DATADOG_API_KEY:-}" ] && export DATADOG_API_KEY="$_datadog_api_key"
+                [ -z "''${DATADOG_APP_KEY:-}" ] && export DATADOG_APP_KEY="$_datadog_app_key"
+                [ -z "''${DD_SITE:-}" ] && export DD_SITE="$_datadog_site"
 
-              # Dogshell (Datadog CLI `dog`) config
-              if [ ! -e "$HOME/.dogrc" ] && [ -n "''${DATADOG_API_KEY:-}" ] && [ -n "''${DATADOG_APP_KEY:-}" ]; then
-                umask 077
-                api_host="https://api.''${DD_SITE:-datadoghq.com}"
-                printf '%s\n' \
-                  "[Connection]" \
-                  "apikey = ''${DATADOG_API_KEY}" \
-                  "appkey = ''${DATADOG_APP_KEY}" \
-                  "api_host = ''${api_host}" \
-                  >"$HOME/.dogrc"
-                chmod 600 "$HOME/.dogrc" 2>/dev/null || true
-              fi
+                # Dogshell config
+                if [ ! -e "$HOME/.dogrc" ] && [ -n "$_datadog_api_key" ] && [ -n "$_datadog_app_key" ]; then
+                  umask 077
+                  printf '%s\n' \
+                    "[Connection]" \
+                    "apikey = $_datadog_api_key" \
+                    "appkey = $_datadog_app_key" \
+                    "api_host = https://api.''${_datadog_site:-datadoghq.com}" \
+                    > "$HOME/.dogrc"
+                  chmod 600 "$HOME/.dogrc" 2>/dev/null || true
+                fi
 
-              # === SSH Hosts Config (from sops secrets) ===
-              _ssh_hosts_config="$HOME/.ssh/config.d/hosts.conf"
-              mkdir -p "$HOME/.ssh/config.d"
-
-              # Regenerate SSH hosts config from secrets
-              _perf_bench_host="$(_load_sops_secret ssh_perf_bench_host)"
-              _zuck_test_host="$(_load_sops_secret ssh_zuck_test_host)"
-              _gpu_test_host="$(_load_sops_secret ssh_gpu_test_host)"
-              _abder_dev_host="$(_load_sops_secret ssh_abder_dev_host)"
-              _abder_dev_instance="$(_load_sops_secret ssh_abder_dev_instance)"
-              _ssm_instance="$(_load_sops_secret ssh_ssm_instance)"
-
-              cat > "$_ssh_hosts_config" << SSHEOF
+                # SSH hosts config (only regenerate if cache was updated)
+                _ssh_config="$HOME/.ssh/config.d/hosts.conf"
+                if [ ! -f "$_ssh_config" ] || [ "$_sops_cache" -nt "$_ssh_config" ]; then
+                  mkdir -p "$HOME/.ssh/config.d"
+                  cat > "$_ssh_config" << SSHEOF
       # Auto-generated from sops secrets - do not edit manually
-      # Regenerated on each shell init
 
       Host perf_bench
-        HostName $_perf_bench_host
+        HostName $_ssh_perf_bench_host
         User ec2-user
         IdentityFile ~/.ssh/abder.pem
 
       Host zuck_test
-        HostName $_zuck_test_host
+        HostName $_ssh_zuck_test_host
         User ec2-user
         IdentityFile ~/.ssh/abder.pem
 
       Host gpu_test
-        HostName $_gpu_test_host
+        HostName $_ssh_gpu_test_host
         User ec2-user
         IdentityFile ~/.ssh/abder.pem
 
-      Host $_ssm_instance
+      Host $_ssh_ssm_instance
         User ec2-user
         ProxyCommand ~/.ssh/ssm-proxy.sh %h %p
         IdentityFile ~/.ssh/id_ed25519
@@ -96,16 +99,21 @@ in {
         UserKnownHostsFile /dev/null
 
       Host abder-dev
-        HostName $_abder_dev_host
+        HostName $_ssh_abder_dev_host
         User abder
         IdentityFile ~/.ssh/dev.pem
-        ProxyCommand sh -c 'STATE=\$(aws ec2 describe-instances --region ca-central-1 --instance-ids $_abder_dev_instance --query "Reservations[0].Instances[0].State.Name" --output text); if [ "\$STATE" = "stopped" ]; then echo "Starting instance..." >&2; aws ec2 start-instances --region ca-central-1 --instance-ids $_abder_dev_instance >&2; aws ec2 wait instance-running --region ca-central-1 --instance-ids $_abder_dev_instance >&2; sleep 15; fi; nc %h %p'
+        ProxyCommand sh -c 'STATE=\$(aws ec2 describe-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance --query "Reservations[0].Instances[0].State.Name" --output text); if [ "\$STATE" = "stopped" ]; then echo "Starting instance..." >&2; aws ec2 start-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; aws ec2 wait instance-running --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; sleep 15; fi; nc %h %p'
       SSHEOF
+                  chmod 600 "$_ssh_config"
+                fi
 
-              chmod 600 "$_ssh_hosts_config"
-              unset _perf_bench_host _zuck_test_host _gpu_test_host _abder_dev_host _abder_dev_instance _ssm_instance _ssh_hosts_config
+                # Cleanup temporary variables
+                unset _openai_api_key _ai_gateway_api_key _datadog_api_key _datadog_app_key _datadog_site
+                unset _ssh_perf_bench_host _ssh_zuck_test_host _ssh_gpu_test_host
+                unset _ssh_abder_dev_host _ssh_abder_dev_instance _ssh_ssm_instance _ssh_config
+              fi
 
-              unset -f _load_sops_secret
+              unset _sops_cache _sops_src
             fi
     ''
   );

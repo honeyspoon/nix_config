@@ -16,6 +16,9 @@ in {
   programs.ssh = {
     enable = true;
 
+    # Opt-out of deprecated default config behavior
+    enableDefaultConfig = false;
+
     # Include additional configs
     includes =
       [
@@ -32,8 +35,15 @@ in {
       IdentityAgent "${onePasswordAgent}"
     '';
 
-    # Only non-sensitive match blocks here
     matchBlocks = {
+      # Global defaults (replaces deprecated enableDefaultConfig)
+      "*" = {
+        extraOptions = {
+          AddKeysToAgent = "yes";
+          IdentitiesOnly = "yes";
+        };
+      };
+
       # SSM-based SSH for AWS EC2 instances (pattern-based, no sensitive data)
       "i-* mi-*" = {
         user = "ec2-user";

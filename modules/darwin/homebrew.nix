@@ -526,6 +526,7 @@ _: {
       "temurin"
       "tofu"
       "topnotch"
+      "vlc"
       "vmware-fusion"
       "warp"
       "wezterm@nightly"
