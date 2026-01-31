@@ -55,12 +55,13 @@ in {
         delve # debugger
 
         # Node.js / JavaScript
-        nodejs_20
+        nodejs_24
         bun
         deno
         nodePackages.pnpm
         nodePackages.typescript
         nodePackages.typescript-language-server
+        fnm # fast node manager (nvm alternative)
 
         # Python
         python3

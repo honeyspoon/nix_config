@@ -66,6 +66,11 @@
       eval "$(jenv init -)"
     fi
 
+    # fnm (fast node manager) - use different Node versions per project
+    if command -v fnm &>/dev/null; then
+      eval "$(fnm env --use-on-cd)"
+    fi
+
     # LM Studio CLI
     export PATH="$PATH:${config.home.homeDirectory}/.lmstudio/bin"
 

@@ -118,11 +118,43 @@
       ];
 
       extraConfig = ''
+        # ══════════════════════════════════════════════════════════════════
+        # GHOSTTY / TERMINAL COMPATIBILITY
+        # ══════════════════════════════════════════════════════════════════
         # True color support
         set -ag terminal-overrides ",xterm-256color:RGB"
         set -ag terminal-overrides ",*256col*:RGB"
         set -ag terminal-overrides ",ghostty:RGB"
         set -ag terminal-overrides ",xterm-ghostty:RGB"
+
+        # Synchronized output (mode 2026) - reduces flickering in fast terminals like Ghostty
+        set -ag terminal-overrides ",xterm-ghostty:Sync"
+        set -ag terminal-overrides ",ghostty:Sync"
+        set -ag terminal-overrides ",xterm-256color:Sync"
+
+        # Extended keys support for Ghostty (better keybinding support)
+        set -s extended-keys on
+        set -s extended-keys-format csi-u
+        set -as terminal-features 'xterm-ghostty:extkeys'
+        set -as terminal-features 'ghostty:extkeys'
+
+        # Clipboard integration (OSC 52)
+        set -s set-clipboard on
+        set -ag terminal-overrides ",xterm-ghostty:Ms=\\E]52;c;%p2%s\\7"
+        set -ag terminal-overrides ",ghostty:Ms=\\E]52;c;%p2%s\\7"
+
+        # Cursor style support
+        set -ag terminal-overrides ",xterm-ghostty:Cs=\\E]12;%p1%s\\7"
+        set -ag terminal-overrides ",ghostty:Cs=\\E]12;%p1%s\\7"
+
+        # ══════════════════════════════════════════════════════════════════
+        # PERFORMANCE / STABILITY
+        # ══════════════════════════════════════════════════════════════════
+        # Reduce redraw frequency to minimize flicker
+        set -g redraw-on-attach on
+
+        # Increase message display time
+        set -g message-limit 100
 
         # Split panes: | for vertical (side-by-side), " for horizontal (stacked)
         bind | split-window -h -c "#{pane_current_path}"
