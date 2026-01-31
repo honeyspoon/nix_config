@@ -129,7 +129,7 @@ in {
         # NETWORK TOOLS
         # ══════════════════════════════════════════════════════════════════
         nmap
-        wireshark
+        wireshark-cli # tshark only, saves ~1GB vs GUI version
         mtr
         bandwhich # bandwidth monitor
         dogdns # dns client
@@ -163,7 +163,6 @@ in {
         eza # ls alternative
         delta # diff alternative
         hyperfine # benchmarking
-        tokei # code stats
         oha # http load tester
 
         # ══════════════════════════════════════════════════════════════════
@@ -187,8 +186,7 @@ in {
         # DEVOPS / CLOUD
         # ══════════════════════════════════════════════════════════════════
         awscli2
-        terraform
-        opentofu
+        opentofu # terraform-compatible, open source
         pulumi
         kubectl
         kubectx
@@ -201,11 +199,9 @@ in {
         # ══════════════════════════════════════════════════════════════════
         # API / HTTP TOOLS
         # ══════════════════════════════════════════════════════════════════
-        httpie
-        xh # httpie alternative
+        xh # modern httpie alternative (faster, Rust)
         grpcurl
         websocat
-        curlie # curl with httpie syntax
 
         # ══════════════════════════════════════════════════════════════════
         # DATA TOOLS
@@ -230,11 +226,11 @@ in {
         # ══════════════════════════════════════════════════════════════════
         just # command runner
         direnv
+        nix-direnv # faster direnv for nix
         entr # file watcher
         watchexec
         act # GitHub Actions locally
-        scc # code counter
-        cloc
+        tokei # fast code stats (Rust)
         hexyl # hex viewer
         viu # image viewer in terminal
 
@@ -268,9 +264,8 @@ in {
         statix # linter with fixes
         deadnix # find unused code
 
-        # Language servers
-        nixd # nix LSP (advanced features)
-        nil # nix LSP (fast, reliable)
+        # Language server (nil is fast/reliable, nixd adds 600MB for LLVM)
+        nil
 
         # ══════════════════════════════════════════════════════════════════
         # AI / DEVELOPMENT

@@ -219,7 +219,7 @@
             # General
             prettier = {
               enable = true;
-              excludes = ["flake.lock" "*.nix"];
+              excludes = ["flake\\.lock" ".*\\.nix$"];
             };
 
             # Security
