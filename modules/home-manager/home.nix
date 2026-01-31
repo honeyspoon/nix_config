@@ -17,6 +17,7 @@
     ./skills.nix
     ./vendor-configs.nix
     ./ssh.nix
+    ./cronjobs.nix
 
     ./activation-tools.nix
 

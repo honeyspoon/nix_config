@@ -46,8 +46,12 @@ _: {
       };
 
       trackpad = {
+        # Tap to click
         Clicking = true;
+        # Two-finger right click
         TrackpadRightClick = true;
+        # Three-finger drag
+        TrackpadThreeFingerDrag = true;
       };
 
       screencapture = {
