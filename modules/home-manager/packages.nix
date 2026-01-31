@@ -249,15 +249,28 @@ in {
         # ══════════════════════════════════════════════════════════════════
         # NIX TOOLS
         # ══════════════════════════════════════════════════════════════════
-        comma # run programs without installing
-        nix-tree
-        nix-diff
-        nixfmt-rfc-style
-        statix
-        deadnix
-        cachix
+        # Package management & exploration
+        comma # run programs without installing (", program")
+        nix-tree # interactive dependency viewer
+        nix-diff # explain derivation differences
+        nix-du # visualize store disk usage
+        nvd # compare nix generations
         nix-prefetch-git
-        nix-output-monitor # nom
+        nix-output-monitor # nom - better build output
+        manix # nix documentation search
+        nix-init # generate packages from URLs
+        nurl # generate fetcher calls from URLs
+        nix-melt # explore nix flake inputs
+        cachix # binary cache
+
+        # Formatters & linters
+        nixfmt-rfc-style
+        statix # linter with fixes
+        deadnix # find unused code
+
+        # Language servers
+        nixd # nix LSP (advanced features)
+        nil # nix LSP (fast, reliable)
 
         # ══════════════════════════════════════════════════════════════════
         # AI / DEVELOPMENT

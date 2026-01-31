@@ -1,3 +1,4 @@
+# macOS system defaults (dock, finder, keyboard, trackpad, etc.)
 _: {
   system = {
     defaults = {

@@ -1,4 +1,5 @@
-_: {
+# Main nix-darwin configuration entry point
+{...}: {
   imports = [
     ./base.nix
     ./packages.nix

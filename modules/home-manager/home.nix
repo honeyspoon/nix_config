@@ -1,6 +1,6 @@
 # Main home-manager entry point
 # Platform-specific modules are handled via lib.mkIf in each module
-_: {
+{...}: {
   imports = [
     ./core.nix
     ./packages.nix

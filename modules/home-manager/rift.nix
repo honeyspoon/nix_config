@@ -1,3 +1,4 @@
+# Rift AI coding assistant configuration
 _: {
   # Rift config lives in this repo under `config/rift/`.
   xdg.configFile."rift/config.toml" = {

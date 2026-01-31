@@ -1,3 +1,4 @@
+# Ghostty terminal emulator configuration
 _: {
   xdg.configFile."ghostty/config".text = ''
     # theme = cyberdream

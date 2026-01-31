@@ -68,6 +68,18 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Pre-commit hooks (native Nix integration)
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Treefmt for unified formatting
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -189,47 +201,45 @@
         pkgs,
         ...
       }: let
-        preCommitCheck =
-          pkgs.runCommand "lint"
-          {
-            src = ./.;
-            nativeBuildInputs = [
-              pkgs.alejandra
-              pkgs.deadnix
-              pkgs.gitleaks
-              pkgs.nodePackages.prettier
-              pkgs.statix
-              pkgs.stylua
-              pkgs.taplo
-            ];
-          }
-          ''
-            export HOME="$TMPDIR"
-            export XDG_CACHE_HOME="$TMPDIR"
+        # Native Nix pre-commit hooks (replaces pre-commit-config.yaml)
+        preCommitHooks = inputs.git-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {
+            # Nix
+            alejandra.enable = true;
+            deadnix.enable = true;
+            statix.enable = true;
 
-            cp -R "$src" repo
-            chmod -R u+w repo
-            cd repo
+            # Lua
+            stylua.enable = true;
 
-            alejandra --check .
-            deadnix --fail .
-            statix check .
-            stylua --check config/nvim
-            taplo fmt --check .
-            prettier --ignore-unknown --check .
-            gitleaks detect --source . --no-git --redact --config .gitleaks.toml
+            # TOML
+            taplo.enable = true;
 
-            echo ok > "$out"
-          '';
+            # General
+            prettier = {
+              enable = true;
+              excludes = ["flake.lock" "*.nix"];
+            };
 
-        devShellHook = ''
-          export PRE_COMMIT_COLOR=always
-          export PRE_COMMIT_CONFIG="$PWD/pre-commit-config.yaml"
+            # Security
+            gitleaks = {
+              enable = true;
+              entry = "${pkgs.gitleaks}/bin/gitleaks detect --source . --no-git --redact --config .gitleaks.toml";
+            };
+          };
+        };
 
-          if [ -d .git ]; then
-            pre-commit install -f --config "$PRE_COMMIT_CONFIG" --install-hooks >/dev/null 2>&1 || true
-          fi
-        '';
+        # Treefmt configuration (unified formatter)
+        treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix
+            stylua.enable = true; # Lua
+            taplo.enable = true; # TOML
+            prettier.enable = true; # JS/JSON/MD/YAML
+          };
+        };
 
         host = "workmbp";
         isDarwin = builtins.match ".*-darwin" system != null;
@@ -276,27 +286,39 @@
               exit 127
             fi
           '';
+
+          # Treefmt wrapper for unified formatting
+          treefmt = treefmtEval.config.build.wrapper;
         };
 
         checks = {
-          pre-commit = preCommitCheck;
+          pre-commit = preCommitHooks;
           darwin-eval = darwinEval;
+          formatting = treefmtEval.config.build.check self;
         };
 
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
+            # Nix tools
             alejandra
             statix
             deadnix
+            nil
+            nixd
+            manix
+
+            # Formatters
             stylua
             taplo
             nodePackages.prettier
-            nil
-            pre-commit
+
+            # Dev tools
             gitleaks
+            nix-output-monitor
           ];
 
-          shellHook = devShellHook;
+          # Install git hooks on shell entry
+          inherit (preCommitHooks) shellHook;
         };
 
         apps =

@@ -1,3 +1,4 @@
+# Homebrew packages, casks, and Mac App Store apps
 _: {
   homebrew = {
     enable = true;

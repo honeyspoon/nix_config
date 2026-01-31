@@ -1,3 +1,4 @@
+# Claude Code CLI configuration
 _: let
   claudeSettings = {
     defaultMode = "bypassPermissions";
