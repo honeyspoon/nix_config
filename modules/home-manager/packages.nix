@@ -352,11 +352,10 @@ in {
       ];
 
     # Set up environment variables for development
+    # NOTE: CARGO_HOME is intentionally NOT set - we use nix's rust toolchain
+    # and don't want rust-analyzer to find rustup proxies at ~/.cargo/bin
     sessionVariables =
       {
-        # Rust
-        CARGO_HOME = "$HOME/.cargo";
-        RUSTUP_HOME = "$HOME/.rustup";
       }
       // lib.optionalAttrs isLinux {
         # pkg-config (Linux only)
@@ -368,9 +367,9 @@ in {
         OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
       };
 
-    # Ensure cargo bin is in PATH
-    sessionPath = [
-      "$HOME/.cargo/bin"
-    ];
+    # NOTE: ~/.cargo/bin is NOT added to PATH
+    # We use nix's rust toolchain exclusively to avoid version conflicts
+    # with rustup proxies (which fail for nightly toolchains without components)
+    sessionPath = [];
   };
 }

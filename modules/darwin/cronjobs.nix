@@ -11,7 +11,8 @@
 
   logsDir = "${primaryUserHome}/Library/Logs";
 
-  envPath = "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
+  # PATH for launchd agents - nix paths FIRST to avoid rustup/homebrew conflicts
+  envPath = "/etc/profiles/per-user/${primaryUser}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
 
   mkUserAgent = {
     name,

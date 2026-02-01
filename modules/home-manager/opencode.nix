@@ -1,6 +1,9 @@
 {config, ...}: let
   bellPath = "${config.xdg.configHome}/opencode/opencode-bell.md";
 
+  # Use nix-provided rust-analyzer to avoid rustup proxy issues with nightly toolchains
+  rustAnalyzerPath = "${config.home.profileDirectory}/bin/rust-analyzer";
+
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
 
@@ -11,8 +14,9 @@
     lsp = {
       terraform.disabled = true;
       # Use lspmux to share rust-analyzer instance between editors
+      # Uses nix rust-analyzer to avoid rustup proxy issues with nightly toolchains
       rust-analyzer = {
-        command = ["lspmux" "--server-path" "rust-analyzer"];
+        command = ["lspmux" "--server-path" rustAnalyzerPath];
       };
     };
 
