@@ -58,10 +58,29 @@ in {
         nodejs_24
         bun
         deno
-        nodePackages.pnpm
-        nodePackages.typescript
-        nodePackages.typescript-language-server
         fnm # fast node manager (nvm alternative)
+
+        # Global npm packages (via nixpkgs nodePackages)
+        # Note: typescript/prettier provided via wrangler deps and treefmt
+        nodePackages.pnpm
+        nodePackages.yarn
+        nodePackages.npm-check-updates # ncu - update package.json deps
+        nodePackages.typescript-language-server
+        nodePackages.eslint
+        nodePackages.vscode-langservers-extracted # html/css/json/eslint LSPs
+        nodePackages.bash-language-server
+        nodePackages.yaml-language-server
+        nodePackages.graphql-language-service-cli
+        nodePackages.svelte-language-server
+        nodePackages."@astrojs/language-server"
+        nodePackages.vercel # vercel CLI
+        nodePackages.wrangler # cloudflare workers CLI (includes typescript, prettier, dotenv-cli)
+        nodePackages.firebase-tools
+        nodePackages.concurrently # run multiple commands
+        nodePackages.nodemon # auto-restart on changes
+        nodePackages.pm2 # process manager
+        nodePackages.serve # static file server
+        nodePackages.http-server # another static server
 
         # Python
         python3

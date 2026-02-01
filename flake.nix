@@ -52,17 +52,6 @@
       flake = false;
     };
 
-    # OpenCode plugins
-    opencode-notify = {
-      url = "github:kdcokenny/opencode-notify";
-      flake = false;
-    };
-
-    opencode-mystatus = {
-      url = "github:vbgate/opencode-mystatus";
-      flake = false;
-    };
-
     # Rust toolchain
     rust-overlay = {
       url = "github:oxalica/rust-overlay";

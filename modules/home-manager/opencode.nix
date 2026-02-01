@@ -45,13 +45,6 @@
       "opencode-openai-codex-auth"
     ];
 
-    command = {
-      mystatus = {
-        description = "Query quota usage for all AI accounts";
-        template = "Use the mystatus tool to query quota usage. Return the result as-is without modification.";
-      };
-    };
-
     provider = {
       openai = {
         options = {
@@ -507,8 +500,5 @@ in {
       recursive = true;
     };
 
-    # NOTE: Plugins must be installed via OCX (they need npm deps at runtime)
-    # Install mystatus: ocx ghost add npm:opencode-mystatus
-    # Install notify: ocx ghost add kdco/notify
   };
 }

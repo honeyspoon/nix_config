@@ -369,38 +369,6 @@
         "type": "github"
       }
     },
-    "opencode-mystatus": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1768926933,
-        "narHash": "sha256-pHXmdEFw5nlJc+/jehCjySAmBRL7UsFBRpHcnSjWMek=",
-        "owner": "vbgate",
-        "repo": "opencode-mystatus",
-        "rev": "196eed3834802a3d9cb0cea74aed8cbc743bcff4",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vbgate",
-        "repo": "opencode-mystatus",
-        "type": "github"
-      }
-    },
-    "opencode-notify": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1769198051,
-        "narHash": "sha256-imheCw6M0E/iAaMIvPn+gWq5PxfPU0MvOGgiZhaN/xs=",
-        "owner": "kdcokenny",
-        "repo": "opencode-notify",
-        "rev": "fe2bba68a3c2a82c727af69db5923f628aa9caa4",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kdcokenny",
-        "repo": "opencode-notify",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agent-browser": "agent-browser",
@@ -411,8 +379,6 @@
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
-        "opencode-mystatus": "opencode-mystatus",
-        "opencode-notify": "opencode-notify",
         "rust-overlay": "rust-overlay",
         "skill-react-best-practices": "skill-react-best-practices",
         "sops-nix": "sops-nix",
