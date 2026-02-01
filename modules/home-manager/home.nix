@@ -5,6 +5,7 @@
     ./core.nix
     ./packages.nix
     ./programs.nix
+    ./stylix.nix
 
     ./shell.nix
     ./git.nix

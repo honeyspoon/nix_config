@@ -80,6 +80,12 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Stylix - system-wide theming
+    stylix = {
+      url = "github:nix-community/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -118,6 +124,7 @@
           sops-nix.homeManagerModules.sops
           nix-index-database.homeModules.nix-index
           zen-browser.homeModules.twilight
+          inputs.stylix.homeModules.stylix
           ./modules/home-manager/secrets.nix
         ];
 
@@ -136,6 +143,9 @@
             inherit system;
             modules = [
               ./modules/darwin/configuration.nix
+
+              # Stylix system-wide theming
+              inputs.stylix.darwinModules.stylix
 
               # Expose wrapped apps and rust toolchain as pkgs.* within nix-darwin
               {nixpkgs.overlays = [inputs.rust-overlay.overlays.default self.overlays.default];}

@@ -62,7 +62,7 @@
     bat = {
       enable = true;
       config = {
-        theme = "TwoDark";
+        # theme is managed by Stylix
         pager = "less -FR";
         style = "plain";
       };
@@ -106,7 +106,8 @@
     # less - pager with better defaults
     less = {
       enable = true;
-      keys = ''
+      # Vim-style horizontal scrolling
+      config = ''
         #command
         h left-scroll
         l right-scroll
@@ -127,7 +128,7 @@
     btop = {
       enable = true;
       settings = {
-        color_theme = "tokyo-night";
+        # color_theme is managed by Stylix
         vim_keys = true;
         rounded_corners = true;
         update_ms = 1000;
