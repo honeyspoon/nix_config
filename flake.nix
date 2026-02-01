@@ -190,6 +190,7 @@
           inherit
             (self.packages.${prev.stdenv.hostPlatform.system})
             agent-browser
+            gastown
             nvim-lazyvim
             ;
         };
@@ -267,6 +268,8 @@
           agent-browser = pkgs.callPackage ./pkgs/agent-browser {
             inherit inputs;
           };
+
+          gastown = pkgs.callPackage ./pkgs/gastown {};
 
           nvim-lazyvim = pkgs.writeShellScriptBin "nvim-lazyvim" ''
 
