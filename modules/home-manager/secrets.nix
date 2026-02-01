@@ -103,6 +103,19 @@ in {
         HostName $_ssh_abder_dev_host
         User abder
         IdentityFile ~/.ssh/dev.pem
+        LocalForward 3000 localhost:3000
+        LocalForward 3001 localhost:3001
+        LocalForward 4000 localhost:4000
+        LocalForward 5000 localhost:5000
+        LocalForward 5432 localhost:5432
+        LocalForward 5433 localhost:5433
+        LocalForward 6379 localhost:6379
+        LocalForward 8000 localhost:8000
+        LocalForward 8080 localhost:8080
+        LocalForward 8443 localhost:8443
+        LocalForward 8978 localhost:8978
+        LocalForward 9090 localhost:9090
+        LocalForward 9000 localhost:9000
         ProxyCommand sh -c 'STATE=\$(aws ec2 describe-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance --query "Reservations[0].Instances[0].State.Name" --output text); if [ "\$STATE" = "stopped" ]; then echo "Starting instance..." >&2; aws ec2 start-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; aws ec2 wait instance-running --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; sleep 15; fi; nc %h %p'
       SSHEOF
                   chmod 600 "$_ssh_config"
