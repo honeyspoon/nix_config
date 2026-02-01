@@ -5,6 +5,20 @@ return {
     ft = { "rust" },
     opts = {
       server = {
+        -- Use lspmux to share rust-analyzer instance between editors
+        cmd = function()
+          -- Check if lspmux server is running
+          local handle = io.popen("lspmux status 2>/dev/null")
+          if handle then
+            local result = handle:read("*a")
+            handle:close()
+            if result and result:match("running") then
+              return { "lspmux", "--server-path", "rust-analyzer" }
+            end
+          end
+          -- Fallback to direct rust-analyzer
+          return { "rust-analyzer" }
+        end,
         -- Rust-analyzer LSP configuration
         on_attach = function(client, bufnr)
           -- Use LazyVim's default on_attach if available

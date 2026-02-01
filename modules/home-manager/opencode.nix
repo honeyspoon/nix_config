@@ -7,9 +7,13 @@
     # Disable permission prompts (always allow).
     permission = "allow";
 
-    # Disable noisy LSP servers
+    # LSP configuration
     lsp = {
       terraform.disabled = true;
+      # Use lspmux to share rust-analyzer instance between editors
+      rust-analyzer = {
+        command = ["lspmux" "--server-path" "rust-analyzer"];
+      };
     };
 
     # MCP servers
