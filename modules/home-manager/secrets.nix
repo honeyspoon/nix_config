@@ -9,6 +9,7 @@
   ageKeyFile = "${user.home}/.config/sops/age/keys.txt";
   cacheDir = "${user.home}/.cache/sops-secrets";
   cacheFile = "${cacheDir}/decrypted.json";
+  arcExportDir = "${user.home}/.local/share/arc-export-decrypted";
 in {
   # Decrypt secrets directly in shell init (workaround for sops-nix launchd PATH issue on macOS)
   # Optimized: decrypt once and cache, extract all values with jq
@@ -111,6 +112,19 @@ in {
                 unset _openai_api_key _ai_gateway_api_key _datadog_api_key _datadog_app_key _datadog_site
                 unset _ssh_perf_bench_host _ssh_zuck_test_host _ssh_gpu_test_host
                 unset _ssh_abder_dev_host _ssh_abder_dev_instance _ssh_ssm_instance _ssh_config
+
+                # Export Arc browser data from sops (for Zen browser import)
+                _arc_dir="${arcExportDir}"
+                if [ ! -d "$_arc_dir" ] || [ "$_sops_cache" -nt "$_arc_dir/tabs.json" ]; then
+                  mkdir -p "$_arc_dir"
+                  chmod 700 "$_arc_dir"
+                  ${pkgs.jq}/bin/jq -r '.arc_browser_tabs // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/tabs.json" 2>/dev/null || true
+                  ${pkgs.jq}/bin/jq -r '.arc_browser_extensions // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/extensions.json" 2>/dev/null || true
+                  ${pkgs.jq}/bin/jq -r '.arc_browser_spaces // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/spaces.json" 2>/dev/null || true
+                  ${pkgs.jq}/bin/jq -r '.arc_browser_bookmarks // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/bookmarks.json" 2>/dev/null || true
+                  chmod 600 "$_arc_dir"/*.json 2>/dev/null || true
+                fi
+                unset _arc_dir
               fi
 
               unset _sops_cache _sops_src

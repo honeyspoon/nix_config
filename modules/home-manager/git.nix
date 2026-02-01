@@ -124,7 +124,7 @@
         line-numbers-right-style = "cyan";
         line-numbers-minus-style = "124";
         line-numbers-plus-style = "28";
-        syntax-theme = "TwoDark";
+        # syntax-theme is managed by Stylix
         side-by-side = false;
         features = "decorations";
 
@@ -156,17 +156,7 @@
       settings = {
         gui = {
           nerdFontsVersion = "3";
-          theme = {
-            unstagedChangesColor = ["#db4b4b"];
-            selectedLineBgColor = ["#283457"];
-            searchingActiveBorderColor = ["#ff9e64" "bold"];
-            optionsTextColor = ["#7aa2f7"];
-            inactiveBorderColor = ["#27a1b9"];
-            defaultFgColor = ["#c0caf5"];
-            cherryPickedCommitFgColor = ["#7aa2f7"];
-            cherryPickedCommitBgColor = ["#bb9af7"];
-            activeBorderColor = ["#ff9e64" "bold"];
-          };
+          # theme is managed by Stylix (stylix.targets.lazygit.enable = true)
         };
 
         os.editPreset = "nvim-remote";

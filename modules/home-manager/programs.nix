@@ -31,6 +31,26 @@
         # Keep prompt focused: no crate or rust version.
         package.disabled = true;
         rust.disabled = true;
+
+        # Tokyo Night colors (override Stylix base16 which has wrong mappings)
+        directory.style = "bold #7aa2f7"; # blue
+        git_branch.style = "bold #bb9af7"; # purple
+        git_status.style = "bold #f7768e"; # red
+        aws.style = "bold #e0af68"; # yellow (was cyan)
+        cmd_duration.style = "bold #e0af68"; # yellow (was cyan)
+        character = {
+          success_symbol = "[❯](bold #9ece6a)"; # green
+          error_symbol = "[❯](bold #f7768e)"; # red
+        };
+        nodejs.style = "bold #9ece6a"; # green
+        python.style = "bold #e0af68"; # yellow
+        rust.style = "bold #ff9e64"; # orange
+        golang.style = "bold #7dcfff"; # cyan
+        docker_context.style = "bold #7dcfff"; # cyan
+        kubernetes.style = "bold #7aa2f7"; # blue
+        terraform.style = "bold #bb9af7"; # purple
+        nix_shell.style = "bold #7aa2f7"; # blue
+        time.style = "bold #565f89"; # gray
       };
     };
 
@@ -51,6 +71,7 @@
         "--border"
         "--inline-info"
       ];
+      # colors managed by Stylix
       # Use fd for file/directory completion
       fileWidgetCommand = "fd --type f --hidden --follow --exclude .git";
       changeDirWidgetCommand = "fd --type d --hidden --follow --exclude .git";

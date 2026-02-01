@@ -15,7 +15,9 @@ _: {
       # Upgrade explicitly when you want with `brew upgrade --force-bottle`.
       upgrade = false;
 
-      cleanup = "zap";
+      # Use "uninstall" instead of "zap" to preserve dependencies
+      # (cargo-lambda needs zig, ueberzugpp needs chafa/libsixel/spdlog/tbb)
+      cleanup = "uninstall";
     };
 
     taps = [
@@ -153,7 +155,7 @@ _: {
       "pipx"
       "plantuml"
       "poetry"
-      "powerlevel10k"
+      # powerlevel10k removed - using Starship prompt (managed by Stylix)
       "prek"
       "qemu"
       "railway"
