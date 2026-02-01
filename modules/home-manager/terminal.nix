@@ -1,10 +1,16 @@
 # Ghostty terminal emulator configuration
 # Uses programs.ghostty module instead of manual xdg.configFile
-_: {
+{
+  pkgs,
+  lib,
+  ...
+}: let
+  inherit (pkgs.stdenv) isDarwin;
+in {
   programs.ghostty = {
     enable = true;
-    # Package is installed via homebrew cask on macOS
-    package = null;
+    # Package is installed via homebrew cask on macOS, use nixpkgs on Linux
+    package = lib.mkIf (!isDarwin) pkgs.ghostty;
 
     # Enable shell integrations
     enableZshIntegration = true;

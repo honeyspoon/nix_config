@@ -20,12 +20,13 @@ in {
     # Dark theme polarity
     polarity = "dark";
 
-    # Wallpaper (required - using a simple generated image for now)
-    # Replace with your own wallpaper: image = ./wallpapers/your-wallpaper.png;
-    image = pkgs.fetchurl {
-      url = "https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/wallpapers/tokyo-night-blured.png";
-      sha256 = "sha256-j+LhAiYJL6TdQlN/Q2Fgk2IK5KGJpOtCqVRKDR8hwzE=";
-    };
+    # Wallpaper (required by stylix)
+    # Using a solid color wallpaper generated from the theme
+    image = pkgs.runCommand "tokyo-night-wallpaper.png" {
+      nativeBuildInputs = [pkgs.imagemagick];
+    } ''
+      magick -size 1920x1080 xc:'#1a1b26' $out
+    '';
 
     # Font configuration
     fonts = {
@@ -67,7 +68,7 @@ in {
       bat.enable = true;
       btop.enable = true;
       fzf.enable = true;
-      ghostty.enable = lib.mkIf isDarwin false; # We configure ghostty manually with tokyonight theme
+      ghostty.enable = false; # We configure ghostty manually with tokyonight theme (package=null breaks systemd)
       kitty.enable = true;
       lazygit.enable = true;
       tmux.enable = false; # We have custom catppuccin config
