@@ -18,6 +18,7 @@
     ./vendor-configs.nix
     ./ssh.nix
     ./cronjobs.nix
+    ./lspmux.nix
 
     ./activation-tools.nix
 

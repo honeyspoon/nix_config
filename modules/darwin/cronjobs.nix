@@ -46,10 +46,26 @@
   };
 
   mantisDir = "${primaryUserHome}/mantis";
+  lspmux = "${pkgs.lspmux}/bin/lspmux";
 in {
   # macOS equivalent of cron: launchd jobs
   launchd.user.agents =
-    {}
+    {
+      # lspmux server - LSP multiplexer (long-running service)
+      lspmux-server = {
+        serviceConfig = {
+          ProgramArguments = [lspmux "server"];
+          EnvironmentVariables = {
+            PATH = envPath;
+            HOME = primaryUserHome;
+          };
+          KeepAlive = true;
+          RunAtLoad = true;
+          StandardOutPath = "${logsDir}/lspmux.log";
+          StandardErrorPath = "${logsDir}/lspmux.err.log";
+        };
+      };
+    }
     // mkUserAgent {
       name = "cron-mantis-pull";
       command = "if [ -d ${mantisDir}/.git ]; then cd ${mantisDir} && git pull; else echo 'mantis: not a git repo' 1>&2; fi";
