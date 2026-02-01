@@ -1,5 +1,8 @@
 # Claude Code CLI configuration
-_: let
+{config, ...}: let
+  # Path to nix-provided rust-analyzer
+  rustAnalyzerPath = "${config.home.profileDirectory}/bin/rust-analyzer";
+
   claudeSettings = {
     defaultMode = "bypassPermissions";
 
@@ -18,6 +21,17 @@ _: let
           "@winor30/mcp-server-datadog"
         ];
         # Reads from environment: DATADOG_API_KEY, DATADOG_APP_KEY, DD_SITE
+      };
+    };
+
+    # LSP servers - use lspmux to share instances between editors
+    lspServers = {
+      rust-analyzer = {
+        command = "lspmux";
+        args = ["--server-path" rustAnalyzerPath];
+        extensionToLanguage = {
+          ".rs" = "rust";
+        };
       };
     };
   };
