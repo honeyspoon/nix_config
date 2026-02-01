@@ -114,13 +114,11 @@ in {
 
         # ══════════════════════════════════════════════════════════════════
         # CLI TOOLS
+        # NOTE: btop, htop, jq are managed via programs.* modules
         # ══════════════════════════════════════════════════════════════════
-        btop
-        htop
         tree
         wget
         curl
-        jq
         yq-go
         watch
         parallel
@@ -146,51 +144,46 @@ in {
 
         # ══════════════════════════════════════════════════════════════════
         # TEXT PROCESSING
+        # NOTE: ripgrep managed via programs.ripgrep module
         # ══════════════════════════════════════════════════════════════════
         gnused
         gawk
-        ripgrep
         sd # sed alternative
 
         # ══════════════════════════════════════════════════════════════════
         # MODERN CLI REPLACEMENTS
+        # NOTE: fd, bat, eza managed via programs.* modules
         # ══════════════════════════════════════════════════════════════════
         dust # du alternative
         duf # df alternative
         procs # ps alternative
-        fd # find alternative
-        bat # cat alternative
-        eza # ls alternative
-        delta # diff alternative
         hyperfine # benchmarking
         oha # http load tester
 
         # ══════════════════════════════════════════════════════════════════
         # FILE MANAGEMENT
+        # NOTE: yazi managed via programs.yazi module
         # ══════════════════════════════════════════════════════════════════
         xplr # file explorer
-        yazi # terminal file manager
         broot # tree explorer
 
         # ══════════════════════════════════════════════════════════════════
         # GIT TOOLS
+        # NOTE: git, lazygit, gh, delta managed via programs.* modules
         # ══════════════════════════════════════════════════════════════════
-        git
         git-lfs
-        lazygit
-        gh # GitHub CLI
         difftastic # structural diff
         git-absorb
 
         # ══════════════════════════════════════════════════════════════════
         # DEVOPS / CLOUD
+        # NOTE: k9s managed via programs.k9s module
         # ══════════════════════════════════════════════════════════════════
         awscli2
         opentofu # terraform-compatible, open source
         pulumi
         kubectl
         kubectx
-        k9s
         kubernetes-helm
         dive # docker image explorer
         lazydocker
@@ -223,10 +216,10 @@ in {
 
         # ══════════════════════════════════════════════════════════════════
         # MISC DEV TOOLS
+        # NOTE: direnv managed via programs.direnv module
         # ══════════════════════════════════════════════════════════════════
         just # command runner
-        direnv
-        nix-direnv # faster direnv for nix
+        nix-direnv # faster direnv for nix (used by programs.direnv)
         entr # file watcher
         watchexec
         act # GitHub Actions locally
@@ -236,10 +229,9 @@ in {
 
         # ══════════════════════════════════════════════════════════════════
         # TERMINAL TOOLS
+        # NOTE: tmux, starship managed via programs.* modules
         # ══════════════════════════════════════════════════════════════════
-        tmux
         zellij
-        starship
         fastfetch
 
         # ══════════════════════════════════════════════════════════════════

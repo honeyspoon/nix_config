@@ -42,8 +42,8 @@ in {
       # LM Studio CLI
       fish_add_path -g ${config.home.homeDirectory}/.lmstudio/bin
 
-      # Cargo binaries
-      fish_add_path -g ${config.home.homeDirectory}/.cargo/bin
+      # NOTE: .cargo/bin is NOT added - we use nix rust toolchain exclusively
+      # Cargo-installed tools (non-rustup) can still be accessed via full path
     '';
   };
 }

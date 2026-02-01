@@ -1,38 +1,52 @@
 # Ghostty terminal emulator configuration
+# Uses programs.ghostty module instead of manual xdg.configFile
 _: {
-  xdg.configFile."ghostty/config".text = ''
-    # theme = cyberdream
-    theme = tokyonight
+  programs.ghostty = {
+    enable = true;
+    # Package is installed via homebrew cask on macOS
+    package = null;
 
-    shell-integration = zsh
-    window-save-state = always
+    # Enable shell integrations
+    enableZshIntegration = true;
+    enableFishIntegration = true;
+    enableBashIntegration = true;
 
-    window-colorspace = display-p3
-    bold-is-bright = true
-    font-thicken = true
+    # Note: installBatSyntax requires package to be non-null
 
-    keybind = performable:ctrl+h=goto_split:left
-    keybind = performable:ctrl+j=goto_split:down
-    keybind = performable:ctrl+k=goto_split:up
-    keybind = performable:ctrl+l=goto_split:right
+    settings = {
+      # Theme
+      theme = "tokyonight";
 
-    keybind = performable:ctrl+shift+h=resize_split:left,10
-    keybind = performable:ctrl+shift+j=resize_split:down,10
-    keybind = performable:ctrl+shift+k=resize_split:up,10
-    keybind = performable:ctrl+shift+l=resize_split:right,14
+      # Window settings
+      window-save-state = "always";
+      window-colorspace = "display-p3";
 
-    # keybind = ctrl+shift+h=esc:[72;6u
-    # keybind = ctrl+shift+j=esc:[74;6u
-    # keybind = ctrl+shift+k=esc:[77;6u
-    # keybind = ctrl+shift+l=esc:[76;6u
+      # Font settings
+      bold-is-bright = true;
+      font-thicken = true;
 
-    keybind = ctrl+a>z=toggle_split_zoom
+      # Split opacity
+      unfocused-split-opacity = 0.9;
 
-    keybind = ctrl+a>shift+backslash=new_split:right
-    keybind = ctrl+a>shift+apostrophe=new_split:down
+      # Keybindings - vim-style split navigation
+      keybind = [
+        "performable:ctrl+h=goto_split:left"
+        "performable:ctrl+j=goto_split:down"
+        "performable:ctrl+k=goto_split:up"
+        "performable:ctrl+l=goto_split:right"
 
-    keybind = ctrl+a>ctrl+l=clear_screen
+        # Resize splits
+        "performable:ctrl+shift+h=resize_split:left,10"
+        "performable:ctrl+shift+j=resize_split:down,10"
+        "performable:ctrl+shift+k=resize_split:up,10"
+        "performable:ctrl+shift+l=resize_split:right,14"
 
-    unfocused-split-opacity=0.9
-  '';
+        # tmux-like shortcuts
+        "ctrl+a>z=toggle_split_zoom"
+        "ctrl+a>shift+backslash=new_split:right"
+        "ctrl+a>shift+apostrophe=new_split:down"
+        "ctrl+a>ctrl+l=clear_screen"
+      ];
+    };
+  };
 }

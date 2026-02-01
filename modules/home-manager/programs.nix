@@ -6,6 +6,9 @@
   programs = {
     home-manager.enable = true;
 
+    # ══════════════════════════════════════════════════════════════════════════
+    # SHELL INTEGRATIONS
+    # ══════════════════════════════════════════════════════════════════════════
     nix-index = {
       enable = true;
       enableZshIntegration = true;
@@ -34,11 +37,13 @@
     zoxide = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
     };
 
     fzf = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
       defaultOptions = [
         "--height 40%"
@@ -46,8 +51,14 @@
         "--border"
         "--inline-info"
       ];
+      # Use fd for file/directory completion
+      fileWidgetCommand = "fd --type f --hidden --follow --exclude .git";
+      changeDirWidgetCommand = "fd --type d --hidden --follow --exclude .git";
     };
 
+    # ══════════════════════════════════════════════════════════════════════════
+    # MODERN CLI REPLACEMENTS (with configuration)
+    # ══════════════════════════════════════════════════════════════════════════
     bat = {
       enable = true;
       config = {
@@ -60,8 +71,166 @@
     eza = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
       git = true;
       icons = "auto";
+    };
+
+    # fd - find replacement (configured via module instead of just package)
+    fd = {
+      enable = true;
+      hidden = true;
+      ignores = [
+        ".git/"
+        "node_modules/"
+        "target/"
+        ".direnv/"
+      ];
+    };
+
+    # ripgrep - grep replacement
+    ripgrep = {
+      enable = true;
+      arguments = [
+        "--smart-case"
+        "--hidden"
+        "--glob=!.git/*"
+        "--glob=!node_modules/*"
+        "--glob=!target/*"
+      ];
+    };
+
+    # jq - JSON processor
+    jq.enable = true;
+
+    # less - pager with better defaults
+    less = {
+      enable = true;
+      keys = ''
+        #command
+        h left-scroll
+        l right-scroll
+      '';
+    };
+
+    # htop - process viewer
+    htop = {
+      enable = true;
+      settings = {
+        show_program_path = false;
+        highlight_base_name = true;
+        tree_view = true;
+      };
+    };
+
+    # btop - modern system monitor
+    btop = {
+      enable = true;
+      settings = {
+        color_theme = "tokyo-night";
+        vim_keys = true;
+        rounded_corners = true;
+        update_ms = 1000;
+      };
+    };
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # SHELL HISTORY (atuin - better than plain history)
+    # ══════════════════════════════════════════════════════════════════════════
+    atuin = {
+      enable = true;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
+      flags = ["--disable-up-arrow"]; # Don't override up arrow
+      settings = {
+        auto_sync = false; # Local only
+        search_mode = "fuzzy";
+        filter_mode = "global";
+        style = "compact";
+        inline_height = 20;
+        show_preview = true;
+      };
+    };
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # FILE MANAGERS
+    # ══════════════════════════════════════════════════════════════════════════
+    yazi = {
+      enable = true;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
+      settings = {
+        manager = {
+          show_hidden = true;
+          sort_by = "natural";
+          sort_dir_first = true;
+        };
+      };
+      keymap = {
+        manager.keymap = [
+          {
+            on = ["<Esc>"];
+            run = "escape";
+            desc = "Exit visual mode, clear selected, or cancel search";
+          }
+          {
+            on = ["q"];
+            run = "quit";
+            desc = "Exit the process";
+          }
+          {
+            on = ["Q"];
+            run = "quit --no-cwd-file";
+            desc = "Exit without writing cwd file";
+          }
+        ];
+      };
+    };
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # DEVOPS TOOLS
+    # ══════════════════════════════════════════════════════════════════════════
+    # k9s - Kubernetes TUI
+    k9s = {
+      enable = true;
+      settings = {
+        k9s = {
+          liveViewAutoRefresh = true;
+          refreshRate = 2;
+          ui = {
+            enableMouse = true;
+            headless = false;
+            logoless = true;
+            crumbsless = false;
+            noIcons = false;
+            skin = "dracula";
+          };
+        };
+      };
+    };
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # DOCUMENTATION
+    # ══════════════════════════════════════════════════════════════════════════
+    # tealdeer - fast tldr client
+    tealdeer = {
+      enable = true;
+      settings = {
+        display = {
+          compact = false;
+          use_pager = false;
+        };
+        updates = {
+          auto_update = true;
+          auto_update_interval_hours = 720; # 30 days
+        };
+      };
+    };
+
+    # man page configuration
+    man = {
+      enable = true;
+      generateCaches = true;
     };
 
     tmux = {
