@@ -267,6 +267,19 @@ in {
         ollama
 
         # ══════════════════════════════════════════════════════════════════
+        # DOCUMENTATION & DIAGRAMS
+        # ══════════════════════════════════════════════════════════════════
+        d2 # modern diagram scripting language
+        plantuml # UML diagrams from text
+        graphviz # DOT graph visualization
+        nodePackages.mermaid-cli # mermaid diagrams CLI (mmdc)
+
+        # ══════════════════════════════════════════════════════════════════
+        # RELEASE & CHANGELOG
+        # ══════════════════════════════════════════════════════════════════
+        git-cliff # changelog generator from commits
+
+        # ══════════════════════════════════════════════════════════════════
         # CODE QUALITY
         # ══════════════════════════════════════════════════════════════════
         pre-commit
