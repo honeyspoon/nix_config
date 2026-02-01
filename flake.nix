@@ -190,6 +190,7 @@
           inherit
             (self.packages.${prev.stdenv.hostPlatform.system})
             agent-browser
+            beads
             gastown
             nvim-lazyvim
             ;
@@ -268,6 +269,8 @@
           agent-browser = pkgs.callPackage ./pkgs/agent-browser {
             inherit inputs;
           };
+
+          beads = pkgs.callPackage ./pkgs/beads {};
 
           gastown = pkgs.callPackage ./pkgs/gastown {};
 
