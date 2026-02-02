@@ -17,6 +17,7 @@
       # Uses nix rust-analyzer to avoid rustup proxy issues with nightly toolchains
       rust-analyzer = {
         command = ["lspmux" "--server-path" rustAnalyzerPath];
+        extensions = ["rs"];
       };
     };
 

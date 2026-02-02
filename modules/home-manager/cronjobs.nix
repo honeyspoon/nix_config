@@ -1,6 +1,6 @@
-# Scheduled tasks (cron jobs)
+# Scheduled tasks (cron jobs) and persistent services
 # macOS: uses launchd (in modules/darwin/cronjobs.nix)
-# Linux: uses systemd user timers (this file)
+# Linux: uses systemd user timers and services (this file)
 {
   lib,
   pkgs,
@@ -9,10 +9,36 @@
 }: let
   inherit (pkgs.stdenv) isLinux;
   mantisDir = "${user.home}/mantis";
+  opencodeBin = "${user.home}/.opencode/bin/opencode";
 in {
   # Linux: systemd user services and timers
   systemd.user = lib.mkIf isLinux {
     services = {
+      # OpenCode web UI with built-in API server on port 4096
+      # Note: `opencode web` includes the server, just also opens browser (which fails on headless)
+      opencode-web = {
+        Unit = {
+          Description = "OpenCode Web UI and API Server";
+          After = ["network.target"];
+        };
+        Service = {
+          Type = "simple";
+          # The browser open will fail on headless but the server still runs
+          ExecStart = "${opencodeBin} web --hostname 0.0.0.0 --port 4096";
+          Restart = "always";
+          RestartSec = "5";
+          Environment = [
+            "PATH=${user.home}/.opencode/bin:${user.home}/.nix-profile/bin:/usr/bin:/bin"
+            "HOME=${user.home}"
+            "BROWSER="
+          ];
+          WorkingDirectory = "${user.home}";
+        };
+        Install = {
+          WantedBy = ["default.target"];
+        };
+      };
+
       # Pull mantis repo every 5 minutes
       cron-mantis-pull = {
         Unit = {
