@@ -13,14 +13,6 @@
     # Disable permission prompts (always allow).
     permission = "allow";
 
-    # Custom commands
-    command = {
-      mystatus = {
-        description = "Query quota usage for all AI accounts";
-        template = "Use the mystatus tool to query quota usage. Return the result as-is without modification.";
-      };
-    };
-
     # LSP configuration
     lsp = {
       terraform.disabled = true;
@@ -43,10 +35,6 @@
           "-c"
           "exec npx -y @winor30/mcp-server-datadog"
         ];
-      };
-      shadcn = {
-        type = "local";
-        command = ["npx" "shadcn@latest" "mcp"];
       };
     };
 
