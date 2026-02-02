@@ -150,6 +150,7 @@ in {
         mtr
         bandwhich # bandwidth monitor
         dogdns # dns client
+        tailscale # VPN mesh network
 
         # ══════════════════════════════════════════════════════════════════
         # ARCHIVE TOOLS
@@ -283,8 +284,6 @@ in {
         # ══════════════════════════════════════════════════════════════════
         claude-code
         agent-browser
-        beads # memory system for AI agents, bd CLI (required by gastown)
-        gastown # multi-agent workspace manager (gt)
         ollama
 
         # ══════════════════════════════════════════════════════════════════
