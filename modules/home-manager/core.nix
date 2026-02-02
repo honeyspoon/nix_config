@@ -16,6 +16,7 @@ in {
       [
         "${config.home.profileDirectory}/bin"
         "${user.home}/.opencode/bin" # OpenCode CLI (installed via curl)
+        "${user.home}/.npm-global/bin" # Global npm packages (ralph, etc.)
       ]
       ++ (
         # macOS/NixOS system profile path
