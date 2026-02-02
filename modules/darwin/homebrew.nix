@@ -280,6 +280,7 @@ _: {
       "sloth"
       "spotify"
       "steam"
+      "tailscale"
       "temurin"
       "tofu"
       "topnotch"
