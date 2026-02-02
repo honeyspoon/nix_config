@@ -15,6 +15,7 @@ in {
     sessionPath =
       [
         "${config.home.profileDirectory}/bin"
+        "${user.home}/.opencode/bin" # OpenCode CLI (installed via curl)
       ]
       ++ (
         # macOS/NixOS system profile path
