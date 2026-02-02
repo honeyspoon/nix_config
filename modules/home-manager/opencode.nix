@@ -23,22 +23,15 @@
 
     # MCP servers
     mcp = {
-      shadcn = {
-        type = "local";
-        command = [
-          "npx"
-          "shadcn@latest"
-          "mcp"
-        ];
-      };
       datadog = {
         type = "local";
+        # Run via interactive shell to get sops-decrypted env vars (DATADOG_API_KEY, etc.)
         command = [
-          "npx"
-          "-y"
-          "@winor30/mcp-server-datadog"
+          "zsh"
+          "-i"
+          "-c"
+          "exec npx -y @winor30/mcp-server-datadog"
         ];
-        # Reads from environment variables - set DATADOG_API_KEY, DATADOG_APP_KEY, DD_SITE
       };
     };
 
