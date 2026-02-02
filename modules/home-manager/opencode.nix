@@ -37,6 +37,7 @@
 
     plugin = [
       "opencode-openai-codex-auth"
+      "@tarquinen/opencode-dcp@latest" # Dynamic Context Pruning - reduces token usage
     ];
 
     provider = {
