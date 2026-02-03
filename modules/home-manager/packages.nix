@@ -283,7 +283,7 @@ in {
         # AI / DEVELOPMENT
         # ══════════════════════════════════════════════════════════════════
         claude-code
-        agent-browser
+        # agent-browser # temporarily disabled - pnpm build failing
         ollama
 
         # ══════════════════════════════════════════════════════════════════

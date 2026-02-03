@@ -1,14 +1,30 @@
-{config, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   bellPath = "${config.xdg.configHome}/opencode/opencode-bell.md";
 
   # Use nix-provided rust-analyzer to avoid rustup proxy issues with nightly toolchains
   rustAnalyzerPath = "${config.home.profileDirectory}/bin/rust-analyzer";
 
+  # Wrapper script to run MCP servers with sops-decrypted env vars
+  # Reads from cached secrets to avoid slow interactive shell init
+  datadogMcpWrapper = pkgs.writeShellScript "datadog-mcp-wrapper" ''
+    CACHE_FILE="$HOME/.cache/sops-secrets/decrypted.json"
+    if [ -f "$CACHE_FILE" ]; then
+      export DATADOG_API_KEY=$(${pkgs.jq}/bin/jq -r '.datadog_api_key // empty' "$CACHE_FILE")
+      export DATADOG_APP_KEY=$(${pkgs.jq}/bin/jq -r '.datadog_app_key // empty' "$CACHE_FILE")
+      export DD_SITE=$(${pkgs.jq}/bin/jq -r '.datadog_site // "datadoghq.com"' "$CACHE_FILE")
+    fi
+    exec npx -y @winor30/mcp-server-datadog "$@"
+  '';
+
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
 
-    # Tokyo Night theme
-    theme = "tokyo-night";
+    # Tokyo Night theme (note: no hyphen in theme name)
+    theme = "tokyonight";
 
     # Disable permission prompts (always allow).
     permission = "allow";
@@ -28,13 +44,8 @@
     mcp = {
       datadog = {
         type = "local";
-        # Run via interactive shell to get sops-decrypted env vars (DATADOG_API_KEY, etc.)
-        command = [
-          "zsh"
-          "-i"
-          "-c"
-          "exec npx -y @winor30/mcp-server-datadog"
-        ];
+        # Use wrapper script that loads env vars from sops cache (avoids slow interactive shell)
+        command = ["${datadogMcpWrapper}"];
       };
     };
 

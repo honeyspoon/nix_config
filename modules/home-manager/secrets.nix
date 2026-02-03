@@ -99,11 +99,12 @@ in {
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null
 
-      # abder-dev via Tailscale (no tunnels needed - direct access via Tailscale network)
+      # abder-dev via Tailscale (auto-starts EC2 if stopped, connects via Tailscale)
       Host abder-dev
         HostName 100.105.199.43
         User abder
         IdentityFile ~/.ssh/dev.pem
+        ProxyCommand sh -c 'STATE=\$(aws ec2 describe-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance --query "Reservations[0].Instances[0].State.Name" --output text); if [ "\$STATE" = "stopped" ]; then echo "Starting instance..." >&2; aws ec2 start-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; aws ec2 wait instance-running --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; echo "Waiting for Tailscale..." >&2; sleep 20; fi; nc %h %p'
 
       # abder-dev via public IP (fallback if Tailscale is down)
       Host abder-dev-public
