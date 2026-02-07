@@ -70,6 +70,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # LLM agent tools (claude-code, ccusage, etc.) — more up-to-date than nixpkgs
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+    };
+
     # Stylix - system-wide theming
     stylix = {
       url = "github:nix-community/stylix";
@@ -136,8 +141,8 @@
               # Stylix system-wide theming
               inputs.stylix.darwinModules.stylix
 
-              # Expose wrapped apps and rust toolchain as pkgs.* within nix-darwin
-              {nixpkgs.overlays = [inputs.rust-overlay.overlays.default self.overlays.default];}
+              # Expose wrapped apps, rust toolchain, and llm-agent tools as pkgs.*
+              {nixpkgs.overlays = [inputs.rust-overlay.overlays.default inputs.llm-agents.overlays.default self.overlays.default];}
 
               # Home Manager module
               home-manager.darwinModules.home-manager
@@ -168,6 +173,7 @@
               config.allowUnfree = true;
               overlays = [
                 inputs.rust-overlay.overlays.default
+                inputs.llm-agents.overlays.default
                 self.overlays.default
               ];
             };

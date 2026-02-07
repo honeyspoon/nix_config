@@ -230,6 +230,7 @@ in {
         trivy
         hadolint
         shellcheck
+        semgrep # static analysis for many languages
         mkcert
         age # encryption
         sops
@@ -253,6 +254,8 @@ in {
         # ══════════════════════════════════════════════════════════════════
         zellij
         fastfetch
+        asciinema # terminal session recording
+        asciinema-agg # generate GIFs from asciinema recordings
 
         # ══════════════════════════════════════════════════════════════════
         # NIX TOOLS
@@ -282,9 +285,10 @@ in {
         # ══════════════════════════════════════════════════════════════════
         # AI / DEVELOPMENT
         # ══════════════════════════════════════════════════════════════════
-        claude-code
+        llm-agents.claude-code # from llm-agents flake (newer than nixpkgs)
         # agent-browser # temporarily disabled - pnpm build failing
         ollama
+        llm # CLI access to LLMs (simon willison)
 
         # ══════════════════════════════════════════════════════════════════
         # DOCUMENTATION & DIAGRAMS
