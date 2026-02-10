@@ -90,8 +90,9 @@
     # HISTORY
     # ══════════════════════════════════════════════════════════════════════
     history = {
-      size = 1000000000;
-      save = 1000000000;
+      # Huge history files can get slow/fragile; Atuin already handles deep history.
+      size = 1000000;
+      save = 1000000;
       path = "${config.home.homeDirectory}/.zsh_history";
       ignoreDups = true;
       share = false;
@@ -118,7 +119,7 @@
       cat = "${pkgs.bat}/bin/bat";
 
       # Utilities
-      clast = "fc -s :0 | pbcopy";
+      clast = "fc -s :0 | { pbcopy || wl-copy || xclip -selection clipboard; }";
       wt = "cd \"$(git worktree list | fzf | awk '{print $1}')\"";
       awscli = "awscliv2";
 
@@ -169,11 +170,18 @@
           *) export PATH="/run/current-system/sw/bin:$PATH" ;;
         esac
 
+        # Ghostty TERM workaround: if terminfo is missing, fall back.
+        if [[ "''${TERM:-}" == ghostty* || "''${TERM:-}" == xterm-ghostty* ]]; then
+          if ! infocmp "$TERM" >/dev/null 2>&1; then
+            export TERM="xterm-256color"
+          fi
+        fi
+
         # If you haven't successfully switched yet, `darwin-rebuild` won't exist.
         # Provide a tiny fallback that uses your flake apps.
         if ! command -v darwin-rebuild >/dev/null 2>&1; then
           darwin-rebuild() {
-            case "${"1:-"}" in
+            case "''${1:-}" in
               build)
                 nix run "$HOME/nix-config#darwin-build"
                 ;;

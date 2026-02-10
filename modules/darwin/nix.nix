@@ -3,8 +3,6 @@
   user,
   ...
 }: {
-  nixpkgs.config.allowUnfree = true;
-
   nix = {
     enable = true;
     package = pkgs.nix;

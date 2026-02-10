@@ -7,8 +7,16 @@
 
   # Rust toolchain from rust-overlay
   rustToolchain = pkgs.rust-bin.stable.latest.default.override {
-    extensions = ["rust-src" "rust-analyzer" "clippy" "rustfmt"];
-    targets = ["wasm32-unknown-unknown" "wasm32-wasip1"];
+    extensions = [
+      "rust-src"
+      "rust-analyzer"
+      "clippy"
+      "rustfmt"
+    ];
+    targets = [
+      "wasm32-unknown-unknown"
+      "wasm32-wasip1"
+    ];
   };
 in {
   home = {
@@ -397,9 +405,9 @@ in {
         OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
       };
 
-    # NOTE: ~/.cargo/bin is NOT added to PATH
-    # We use nix's rust toolchain exclusively to avoid version conflicts
-    # with rustup proxies (which fail for nightly toolchains without components)
+    # NOTE: ~/.cargo/bin is not added via `home.sessionPath`.
+    # Zsh may still append it for convenience (see `modules/home-manager/zsh.nix`),
+    # but Nix-provided tools should win earlier in PATH.
     sessionPath = [];
   };
 }

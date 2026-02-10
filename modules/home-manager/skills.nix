@@ -27,7 +27,9 @@
     ".codex/skills/${name}".source = "${skill.src}/${skill.path}";
   };
 
-  allNixSkillFiles = builtins.foldl' (acc: name: acc // mkSkillFiles name nixSkills.${name}) {} (builtins.attrNames nixSkills);
+  allNixSkillFiles = builtins.foldl' (acc: name: acc // mkSkillFiles name nixSkills.${name}) {} (
+    builtins.attrNames nixSkills
+  );
 
   # ══════════════════════════════════════════════════════════════════════
   # SKILLS.SH REGISTRY (installed via npx skills add)
@@ -36,20 +38,40 @@
   #   source = "github-owner/repo"
   #   skill  = skill name within the repo (optional, defaults to attrset key)
   skillsRegistry = {
-    rust-best-practices = {source = "apollographql/skills";};
+    rust-best-practices = {
+      source = "apollographql/skills";
+    };
     remotion-best-practices = {
       source = "remotion-dev/skills";
       skill = "remotion";
     };
-    tanstack-query = {source = "jezweb/claude-skills";};
-    tanstack-router = {source = "jezweb/claude-skills";};
-    tanstack-table = {source = "jezweb/claude-skills";};
-    tanstack-form = {source = "exceptionless/exceptionless";};
-    zod = {source = "pproenca/dot-skills";};
-    framer-motion-best-practices = {source = "pproenca/dot-skills";};
-    find-skills = {source = "vercel-labs/skills";};
-    frontend-design = {source = "vercel-labs/skills";};
-    webapp-testing = {source = "anthropics/skills";};
+    tanstack-query = {
+      source = "jezweb/claude-skills";
+    };
+    tanstack-router = {
+      source = "jezweb/claude-skills";
+    };
+    tanstack-table = {
+      source = "jezweb/claude-skills";
+    };
+    tanstack-form = {
+      source = "exceptionless/exceptionless";
+    };
+    zod = {
+      source = "pproenca/dot-skills";
+    };
+    framer-motion-best-practices = {
+      source = "pproenca/dot-skills";
+    };
+    find-skills = {
+      source = "vercel-labs/skills";
+    };
+    frontend-design = {
+      source = "vercel-labs/skills";
+    };
+    webapp-testing = {
+      source = "anthropics/skills";
+    };
   };
 
   # Generate the install command for a single skill
@@ -95,8 +117,7 @@ in {
     activation.installSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
       # Run in background to avoid blocking the switch
       if command -v npx >/dev/null 2>&1; then
-        ${installScript}/bin/install-skills &
-        disown
+        ${installScript}/bin/install-skills >/dev/null 2>&1 &
       fi
     '';
   };

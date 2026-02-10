@@ -57,7 +57,7 @@ in {
         };
         Service = {
           Type = "oneshot";
-          ExecStart = "${pkgs.procps}/bin/pkill nvim || true";
+          ExecStart = "${pkgs.procps}/bin/pkill -u ${user.name} -x nvim || true";
         };
       };
 
@@ -68,7 +68,7 @@ in {
         };
         Service = {
           Type = "oneshot";
-          ExecStart = "${pkgs.procps}/bin/pkill rust-analyzer || true";
+          ExecStart = "${pkgs.procps}/bin/pkill -u ${user.name} -x rust-analyzer || true";
         };
       };
     };

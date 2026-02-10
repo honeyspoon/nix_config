@@ -55,7 +55,10 @@ in {
       # lspmux server - LSP multiplexer (long-running service)
       lspmux-server = {
         serviceConfig = {
-          ProgramArguments = [lspmux "server"];
+          ProgramArguments = [
+            lspmux
+            "server"
+          ];
           EnvironmentVariables = {
             PATH = envPath;
             HOME = primaryUserHome;
@@ -74,7 +77,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-pkill-nvim";
-      command = "pkill nvim";
+      command = "pkill -u ${primaryUser} -x nvim || true";
       startCalendarInterval = [
         {
           Hour = 12;
@@ -84,7 +87,7 @@ in {
     }
     // mkUserAgent {
       name = "cron-kill-rust-analyzer";
-      command = "pkill rust-analyzer";
+      command = "pkill -u ${primaryUser} -x rust-analyzer || true";
       startCalendarInterval = [{Minute = 0;}];
     };
 }

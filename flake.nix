@@ -131,24 +131,36 @@
           system = "aarch64-darwin";
           user = mkUser system;
           host = darwinHost;
+
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = [
+              inputs.rust-overlay.overlays.default
+              inputs.llm-agents.overlays.default
+              self.overlays.default
+            ];
+          };
         in
           nix-darwin.lib.darwinSystem {
             specialArgs = {inherit user host;};
             inherit system;
+            inherit pkgs;
             modules = [
               ./modules/darwin/configuration.nix
 
               # Stylix system-wide theming
               inputs.stylix.darwinModules.stylix
 
-              # Expose wrapped apps, rust toolchain, and llm-agent tools as pkgs.*
-              {nixpkgs.overlays = [inputs.rust-overlay.overlays.default inputs.llm-agents.overlays.default self.overlays.default];}
-
               # Home Manager module
               home-manager.darwinModules.home-manager
               {
                 home-manager = {
-                  useGlobalPkgs = true;
+                  # Home Manager warns (and will eventually error) when nixpkgs.*
+                  # is configured while `useGlobalPkgs = true`. Some nix-darwin
+                  # modules (e.g. Stylix) set overlays/config under the hood.
+                  # Keep pkgs consistent by pinning HM to the same `pkgs`.
+                  useGlobalPkgs = false;
                   useUserPackages = true;
 
                   # Back up pre-existing dotfiles once so the first `darwin-switch` succeeds.
@@ -156,7 +168,17 @@
 
                   extraSpecialArgs = {inherit user host inputs;};
                   sharedModules = sharedHmModules;
-                  users.${user.name} = import ./modules/home-manager/home.nix;
+                  users.${user.name} = {
+                    imports = [./modules/home-manager/home.nix];
+                    nixpkgs = {
+                      config.allowUnfree = true;
+                      overlays = [
+                        inputs.rust-overlay.overlays.default
+                        inputs.llm-agents.overlays.default
+                        self.overlays.default
+                      ];
+                    };
+                  };
                 };
               }
             ];
@@ -225,7 +247,10 @@
             # General
             prettier = {
               enable = true;
-              excludes = ["flake\\.lock" ".*\\.nix$"];
+              excludes = [
+                "flake\\.lock"
+                ".*\\.nix$"
+              ];
             };
 
             # Security
@@ -283,14 +308,21 @@
 
             export XDG_CONFIG_HOME="${lazyvimConfig}/config"
 
+            # Allow overriding the Neovim binary (e.g. a Homebrew install).
+            if [ -n "''${NVIM_BIN:-}" ]; then
+              exec "$NVIM_BIN" "$@"
+            fi
+
             if [ -x /opt/homebrew/bin/nvim ]; then
               exec /opt/homebrew/bin/nvim "$@"
             elif [ -x /run/current-system/sw/bin/nvim ]; then
               exec /run/current-system/sw/bin/nvim "$@"
+            elif [ -x "${pkgs.neovim}/bin/nvim" ]; then
+              exec "${pkgs.neovim}/bin/nvim" "$@"
             elif command -v nvim >/dev/null 2>&1; then
               exec nvim "$@"
             else
-              echo "nvim not found (install via Homebrew or Nix)" >&2
+              echo "nvim not found (set NVIM_BIN or install via Homebrew/Nix)" >&2
               exit 127
             fi
           '';

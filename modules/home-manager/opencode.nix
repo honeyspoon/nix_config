@@ -11,15 +11,7 @@
 
   # Wrapper script to run MCP servers with sops-decrypted env vars
   # Reads from cached secrets to avoid slow interactive shell init
-  datadogMcpWrapper = pkgs.writeShellScript "datadog-mcp-wrapper" ''
-    CACHE_FILE="$HOME/.cache/sops-secrets/decrypted.json"
-    if [ -f "$CACHE_FILE" ]; then
-      export DATADOG_API_KEY=$(${pkgs.jq}/bin/jq -r '.datadog_api_key // empty' "$CACHE_FILE")
-      export DATADOG_APP_KEY=$(${pkgs.jq}/bin/jq -r '.datadog_app_key // empty' "$CACHE_FILE")
-      export DD_SITE=$(${pkgs.jq}/bin/jq -r '.datadog_site // "datadoghq.com"' "$CACHE_FILE")
-    fi
-    exec npx -y @winor30/mcp-server-datadog "$@"
-  '';
+  datadogMcpWrapper = import ./lib/datadog-mcp-wrapper.nix {inherit pkgs;};
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
@@ -36,7 +28,11 @@
       # Use lspmux to share rust-analyzer instance between editors
       # Uses nix rust-analyzer to avoid rustup proxy issues with nightly toolchains
       rust-analyzer = {
-        command = ["lspmux" "--server-path" rustAnalyzerPath];
+        command = [
+          "lspmux"
+          "--server-path"
+          rustAnalyzerPath
+        ];
         extensions = ["rs"];
       };
     };
@@ -50,7 +46,12 @@
       };
       tiger = {
         type = "local";
-        command = [tigerPath "mcp" "start"];
+        command = [
+          tigerPath
+          "mcp"
+          "start"
+          "stdio"
+        ];
       };
     };
 
@@ -62,7 +63,10 @@
 
     experimental = {
       quotaToast = {
-        enabledProviders = ["openai" "google-antigravity"];
+        enabledProviders = [
+          "openai"
+          "google-antigravity"
+        ];
         showSessionTokens = true;
         onlyCurrentModel = false;
       };

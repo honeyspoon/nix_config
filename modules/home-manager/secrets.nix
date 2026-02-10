@@ -11,6 +11,35 @@
   cacheFile = "${cacheDir}/decrypted.json";
   arcExportDir = "${user.home}/.local/share/arc-export-decrypted";
 in {
+  # Keep the decrypted cache up-to-date during `home-manager switch` so shells and
+  # MCP wrappers don't need to run sops on every startup.
+  home.activation.refreshSopsSecretsCache = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    set -euo pipefail
+
+    if [ -r "${secretsPath}" ] && [ -r "${ageKeyFile}" ]; then
+      cache_dir="${cacheDir}"
+      cache_file="${cacheFile}"
+
+      mkdir -p "$cache_dir"
+      chmod 700 "$cache_dir" 2>/dev/null || true
+
+      old_umask="$(umask)"
+      umask 077
+      tmp_cache="$cache_dir/decrypted.json.tmp.$$"
+      if ${pkgs.sops}/bin/sops -d --output-type json "${secretsPath}" > "$tmp_cache" 2>/dev/null; then
+        if [ -s "$tmp_cache" ]; then
+          mv -f "$tmp_cache" "$cache_file"
+          chmod 600 "$cache_file" 2>/dev/null || true
+        else
+          rm -f "$tmp_cache" 2>/dev/null || true
+        fi
+      else
+        rm -f "$tmp_cache" 2>/dev/null || true
+      fi
+      umask "$old_umask" 2>/dev/null || true
+    fi
+  '';
+
   # Decrypt secrets directly in shell init (workaround for sops-nix launchd PATH issue on macOS)
   # Optimized: decrypt once and cache, extract all values with jq
   programs.zsh.initContent = lib.mkIf (builtins.pathExists secretsFile) (
@@ -23,9 +52,22 @@ in {
               # Regenerate cache if secrets file is newer or cache doesn't exist
               if [ ! -f "$_sops_cache" ] || [ "$_sops_src" -nt "$_sops_cache" ]; then
                 mkdir -p "${cacheDir}"
-                chmod 700 "${cacheDir}"
-                ${pkgs.sops}/bin/sops -d --output-type json "$_sops_src" > "$_sops_cache" 2>/dev/null
-                chmod 600 "$_sops_cache"
+                chmod 700 "${cacheDir}" 2>/dev/null || true
+                _old_umask="$(umask)"
+                umask 077
+                _tmp_cache="${cacheDir}/decrypted.json.tmp.$$"
+                if ${pkgs.sops}/bin/sops -d --output-type json "$_sops_src" > "$_tmp_cache" 2>/dev/null; then
+                  if [ -s "$_tmp_cache" ]; then
+                    mv -f "$_tmp_cache" "$_sops_cache"
+                    chmod 600 "$_sops_cache" 2>/dev/null || true
+                  else
+                    rm -f "$_tmp_cache" 2>/dev/null || true
+                  fi
+                else
+                  rm -f "$_tmp_cache" 2>/dev/null || true
+                fi
+                umask "$_old_umask" 2>/dev/null || true
+                unset _tmp_cache _old_umask
               fi
 
               if [ -r "$_sops_cache" ]; then
@@ -58,7 +100,10 @@ in {
                 [ -z "''${DD_SITE:-}" ] && export DD_SITE="$_datadog_site"
 
                 # Dogshell config
-                if [ ! -e "$HOME/.dogrc" ] && [ -n "$_datadog_api_key" ] && [ -n "$_datadog_app_key" ]; then
+                if { [ ! -f "$HOME/.dogrc" ] || [ "$_sops_cache" -nt "$HOME/.dogrc" ]; } \
+                  && [ -n "$_datadog_api_key" ] \
+                  && [ -n "$_datadog_app_key" ]; then
+                  _old_umask="$(umask)"
                   umask 077
                   printf '%s\n' \
                     "[Connection]" \
@@ -67,12 +112,16 @@ in {
                     "api_host = https://api.''${_datadog_site:-datadoghq.com}" \
                     > "$HOME/.dogrc"
                   chmod 600 "$HOME/.dogrc" 2>/dev/null || true
+                  umask "$_old_umask" 2>/dev/null || true
+                  unset _old_umask
                 fi
 
                 # SSH hosts config (only regenerate if cache was updated)
                 _ssh_config="$HOME/.ssh/config.d/hosts.conf"
                 if [ ! -f "$_ssh_config" ] || [ "$_sops_cache" -nt "$_ssh_config" ]; then
                   mkdir -p "$HOME/.ssh/config.d"
+                  _old_umask="$(umask)"
+                  umask 077
                   cat > "$_ssh_config" << SSHEOF
       # Auto-generated from sops secrets - do not edit manually
 
@@ -114,6 +163,8 @@ in {
         ProxyCommand sh -c 'STATE=\$(aws ec2 describe-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance --query "Reservations[0].Instances[0].State.Name" --output text); if [ "\$STATE" = "stopped" ]; then echo "Starting instance..." >&2; aws ec2 start-instances --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; aws ec2 wait instance-running --region ca-central-1 --instance-ids $_ssh_abder_dev_instance >&2; sleep 15; fi; nc %h %p'
       SSHEOF
                   chmod 600 "$_ssh_config"
+                  umask "$_old_umask" 2>/dev/null || true
+                  unset _old_umask
                 fi
 
                 # Cleanup temporary variables
@@ -125,7 +176,7 @@ in {
                 _arc_dir="${arcExportDir}"
                 if [ ! -d "$_arc_dir" ] || [ "$_sops_cache" -nt "$_arc_dir/tabs.json" ]; then
                   mkdir -p "$_arc_dir"
-                  chmod 700 "$_arc_dir"
+                  chmod 700 "$_arc_dir" 2>/dev/null || true
                   ${pkgs.jq}/bin/jq -r '.arc_browser_tabs // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/tabs.json" 2>/dev/null || true
                   ${pkgs.jq}/bin/jq -r '.arc_browser_extensions // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/extensions.json" 2>/dev/null || true
                   ${pkgs.jq}/bin/jq -r '.arc_browser_spaces // "[]" | fromjson' "$_sops_cache" > "$_arc_dir/spaces.json" 2>/dev/null || true

@@ -56,23 +56,8 @@ hot_reload = true
 
 [settings.layout]
 # ===== LAYOUT MODE =====
-# Options: "traditional" (i3/sway), "bsp", "master_stack", "scrolling" (niri-style carousel)
-mode = "scrolling"
-
-[settings.layout.scrolling]
-# Width of the active/focused column (0..1 of screen width)
-column_width_ratio = 0.7
-min_column_width_ratio = 0.3
-max_column_width_ratio = 0.9
-# Alignment for the focused column: "left", "center", or "right"
-alignment = "center"
-# "niri": reveal columns on navigation direction | "anchored": always align per `alignment`
-focus_navigation_style = "niri"
-
-[settings.layout.scrolling.gestures]
-enabled = true
-invert_horizontal = false
-fingers = 3
+# Options: "traditional" (i3/sway), "bsp"
+mode = "traditional"
 
 [settings.layout.stack]
 # ===== STACK CONFIGURATION =====

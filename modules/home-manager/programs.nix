@@ -341,10 +341,7 @@
         # ══════════════════════════════════════════════════════════════════
         # PERFORMANCE / STABILITY
         # ══════════════════════════════════════════════════════════════════
-        # Reduce redraw frequency to minimize flicker
-        set -g redraw-on-attach on
-
-        # Increase message display time
+        # Increase message buffer
         set -g message-limit 100
 
         # Split panes: | for vertical (side-by-side), " for horizontal (stacked)
