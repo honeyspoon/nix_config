@@ -197,6 +197,7 @@
             (self.packages.${prev.stdenv.hostPlatform.system})
             agent-browser
             nvim-lazyvim
+            tiger-cli
             ;
         };
       };
@@ -273,6 +274,8 @@
           agent-browser = pkgs.callPackage ./pkgs/agent-browser {
             inherit inputs;
           };
+
+          tiger-cli = pkgs.callPackage ./pkgs/tiger-cli {};
 
           nvim-lazyvim = pkgs.writeShellScriptBin "nvim-lazyvim" ''
 

@@ -4,8 +4,9 @@
   pkgs,
   ...
 }: let
-  # Path to nix-provided rust-analyzer
+  # Paths to nix-provided tools
   rustAnalyzerPath = "${config.home.profileDirectory}/bin/rust-analyzer";
+  tigerPath = "${pkgs.tiger-cli}/bin/tiger";
 
   # Wrapper script to run MCP servers with sops-decrypted env vars
   # Reads from cached secrets to avoid slow interactive shell init
@@ -34,6 +35,10 @@
         # Use wrapper script that loads env vars from sops cache (avoids slow interactive shell)
         command = "${datadogMcpWrapper}";
         args = [];
+      };
+      tiger = {
+        command = tigerPath;
+        args = ["mcp" "start"];
       };
     };
 

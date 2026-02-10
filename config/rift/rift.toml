@@ -62,9 +62,20 @@ run_on_start = []
 
 [settings.layout]
 # Layout system
-# - mode: "traditional" (i3/sway-like containers) or "bsp" (binary space partitioning)
-#   defaults to "traditional" if omitted
-mode = "traditional"
+# - mode: "traditional" | "bsp" | "master_stack" | "scrolling" (niri-style carousel)
+mode = "scrolling"
+
+[settings.layout.scrolling]
+column_width_ratio = 0.7
+min_column_width_ratio = 0.3
+max_column_width_ratio = 0.9
+alignment = "center"
+focus_navigation_style = "niri"
+
+[settings.layout.scrolling.gestures]
+enabled = true
+invert_horizontal = false
+fingers = 3
 
 [settings.layout.stack]
 # How much of each stacked window sticks out (in pixels)

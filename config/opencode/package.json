@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "1.1.10"
+    "@opencode-ai/plugin": "1.1.10",
+    "@slkiser/opencode-quota": "latest"
   }
 }

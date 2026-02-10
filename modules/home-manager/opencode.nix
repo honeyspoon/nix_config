@@ -5,8 +5,9 @@
 }: let
   bellPath = "${config.xdg.configHome}/opencode/opencode-bell.md";
 
-  # Use nix-provided rust-analyzer to avoid rustup proxy issues with nightly toolchains
+  # Paths to nix-provided tools
   rustAnalyzerPath = "${config.home.profileDirectory}/bin/rust-analyzer";
+  tigerPath = "${pkgs.tiger-cli}/bin/tiger";
 
   # Wrapper script to run MCP servers with sops-decrypted env vars
   # Reads from cached secrets to avoid slow interactive shell init
@@ -47,12 +48,25 @@
         # Use wrapper script that loads env vars from sops cache (avoids slow interactive shell)
         command = ["${datadogMcpWrapper}"];
       };
+      tiger = {
+        type = "local";
+        command = [tigerPath "mcp" "start"];
+      };
     };
 
     plugin = [
       "opencode-openai-codex-auth"
       "@tarquinen/opencode-dcp@latest" # Dynamic Context Pruning - reduces token usage
+      "@slkiser/opencode-quota" # Quota & token usage tracking with toast notifications
     ];
+
+    experimental = {
+      quotaToast = {
+        enabledProviders = ["openai" "google-antigravity"];
+        showSessionTokens = true;
+        onlyCurrentModel = false;
+      };
+    };
 
     provider = {
       openai = {

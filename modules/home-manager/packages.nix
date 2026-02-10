@@ -130,6 +130,7 @@ in {
         postgresql_17
         sqlite
         redis
+        tiger-cli # TimescaleDB/Tiger Cloud CLI with MCP server
 
         # ══════════════════════════════════════════════════════════════════
         # CLI TOOLS
