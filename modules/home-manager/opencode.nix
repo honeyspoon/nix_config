@@ -63,6 +63,7 @@
       "opencode-openai-codex-auth@latest"
       "@tarquinen/opencode-dcp@latest" # Dynamic Context Pruning - reduces token usage
       "@slkiser/opencode-quota@latest" # Quota & token usage tracking with toast notifications
+      "opencode-scheduler@latest"
     ];
 
     experimental = {
