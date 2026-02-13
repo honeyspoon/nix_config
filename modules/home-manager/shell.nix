@@ -17,6 +17,24 @@
       end
     end
   '';
+
+  # Prefer OpenCode installed under ~/.opencode/bin (self-updating).
+  opencodePathFix = ''
+    if [ -d "$HOME/.opencode/bin" ]; then
+      case ":$PATH:" in
+        *":$HOME/.opencode/bin:"*) ;;
+        *) export PATH="$HOME/.opencode/bin:$PATH" ;;
+      esac
+    fi
+  '';
+
+  opencodePathFixFish = ''
+    if test -d "$HOME/.opencode/bin"
+      if not contains -- "$HOME/.opencode/bin" $PATH
+        set -gx PATH "$HOME/.opencode/bin" $PATH
+      end
+    end
+  '';
 in {
   imports = [
     ./zsh.nix
@@ -28,7 +46,7 @@ in {
   programs.bash = {
     enable = true;
     inherit (config.programs.zsh) shellAliases;
-    initExtra = ghosttyTermFix;
+    initExtra = opencodePathFix + "\n" + ghosttyTermFix;
   };
 
   # ══════════════════════════════════════════════════════════════════════════
@@ -37,6 +55,7 @@ in {
   programs.fish = {
     enable = true;
     shellInit = ''
+      ${opencodePathFixFish}
       ${ghosttyTermFixFish}
 
       # LM Studio CLI

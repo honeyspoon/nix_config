@@ -120,6 +120,21 @@ _: {
       "cargo-udeps"
 
       # ══════════════════════════════════════════════════════════════════
+      # DEPENDENCIES (kept explicit for brew bundle cleanup)
+      # ══════════════════════════════════════════════════════════════════
+      # `brew bundle cleanup` tries to uninstall explicitly-installed deps
+      # that aren't in the Brewfile, even if still required by other brews.
+      # Keeping these listed prevents noisy "Refusing to uninstall" errors.
+      "zsh" # keep /opt/homebrew/bin/zsh present
+      "zig" # required by cargo-lambda
+      "chafa" # required by ueberzugpp
+      "libsixel" # required by ueberzugpp
+      "spdlog" # required by ueberzugpp
+      "tbb" # required by ueberzugpp
+      "libspng" # required by ueberzugpp
+      "tmux" # required by sesh
+
+      # ══════════════════════════════════════════════════════════════════
       # MISC TOOLS (not in nix / brew-specific)
       # ══════════════════════════════════════════════════════════════════
       "aichat"
@@ -146,7 +161,7 @@ _: {
       "mermaid-cli"
       "mods" # charm ai
       "neovim" # keep brew neovim for cask deps
-      "opencode"
+      # OpenCode is managed via the self-updating ~/.opencode/bin install.
       "oxlint"
       "parquet-cli"
       "csv2arrow"

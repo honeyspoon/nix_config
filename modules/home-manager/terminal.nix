@@ -19,6 +19,13 @@ in {
     # Note: installBatSyntax requires package to be non-null
 
     settings = {
+      # Avoid pinning the shell to a Homebrew path that may be uninstalled by
+      # `brew bundle cleanup`.
+      command =
+        if isDarwin
+        then "/bin/zsh"
+        else "zsh";
+
       # Theme
       theme = "tokyonight";
 

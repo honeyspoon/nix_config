@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -21,6 +22,9 @@
 
     # Disable permission prompts (always allow).
     permission = "allow";
+
+    # Keep OpenCode up to date.
+    autoupdate = true;
 
     # LSP configuration
     lsp = {
@@ -56,9 +60,9 @@
     };
 
     plugin = [
-      "opencode-openai-codex-auth"
+      "opencode-openai-codex-auth@latest"
       "@tarquinen/opencode-dcp@latest" # Dynamic Context Pruning - reduces token usage
-      "@slkiser/opencode-quota" # Quota & token usage tracking with toast notifications
+      "@slkiser/opencode-quota@latest" # Quota & token usage tracking with toast notifications
     ];
 
     experimental = {
@@ -502,6 +506,17 @@
     ];
   };
 in {
+  home.activation.ensureOpencodeInstalled = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    set -euo pipefail
+
+    if [ ! -x "$HOME/.opencode/bin/opencode" ]; then
+      # Best-effort install. Skip quietly if offline.
+      if ${pkgs.curl}/bin/curl -sf --max-time 5 https://opencode.ai/install >/dev/null 2>&1; then
+        ${pkgs.curl}/bin/curl -fsSL https://opencode.ai/install | ${pkgs.bash}/bin/bash || true
+      fi
+    fi
+  '';
+
   xdg.configFile = {
     "opencode/opencode-bell.md".text = ''
       # Attention bell

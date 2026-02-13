@@ -165,10 +165,20 @@
         ulimit -n 10240
 
         # Ensure nix-darwin system profile is on PATH
-        case ":$PATH:" in
-          *":/run/current-system/sw/bin:"*) ;;
-          *) export PATH="/run/current-system/sw/bin:$PATH" ;;
-        esac
+        if [ -d /run/current-system/sw/bin ]; then
+          case ":$PATH:" in
+            *":/run/current-system/sw/bin:"*) ;;
+            *) export PATH="/run/current-system/sw/bin:$PATH" ;;
+          esac
+        fi
+
+        # Prefer OpenCode installed under ~/.opencode/bin (self-updating).
+        if [ -d "$HOME/.opencode/bin" ]; then
+          case ":$PATH:" in
+            *":$HOME/.opencode/bin:"*) ;;
+            *) export PATH="$HOME/.opencode/bin:$PATH" ;;
+          esac
+        fi
 
         # Ghostty TERM workaround: if terminfo is missing, fall back.
         if [[ "''${TERM:-}" == ghostty* || "''${TERM:-}" == xterm-ghostty* ]]; then

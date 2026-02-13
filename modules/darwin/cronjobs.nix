@@ -12,7 +12,7 @@
   logsDir = "${primaryUserHome}/Library/Logs";
 
   # PATH for launchd agents - nix paths FIRST to avoid rustup/homebrew conflicts
-  envPath = "/etc/profiles/per-user/${primaryUser}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
+  envPath = "/etc/profiles/per-user/${primaryUser}/bin:${primaryUserHome}/.opencode/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin";
 
   mkUserAgent = {
     name,
@@ -74,6 +74,16 @@ in {
       name = "cron-mantis-pull";
       command = "if [ -d ${mantisDir}/.git ]; then cd ${mantisDir} && git pull; else echo 'mantis: not a git repo' 1>&2; fi";
       startInterval = 300;
+    }
+    // mkUserAgent {
+      name = "cron-opencode-upgrade";
+      command = "if [ ! -x $HOME/.opencode/bin/opencode ]; then ${pkgs.curl}/bin/curl -fsSL https://opencode.ai/install | ${pkgs.bash}/bin/bash || true; fi; if [ -x $HOME/.opencode/bin/opencode ]; then $HOME/.opencode/bin/opencode upgrade || true; rm -rf $HOME/.cache/opencode/node_modules $HOME/.cache/opencode/bun.lock; $HOME/.opencode/bin/opencode debug config >/dev/null 2>&1 || true; fi";
+      startCalendarInterval = [
+        {
+          Hour = 3;
+          Minute = 0;
+        }
+      ];
     }
     // mkUserAgent {
       name = "cron-pkill-nvim";

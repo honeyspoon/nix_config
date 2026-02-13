@@ -218,6 +218,8 @@
           inherit
             (self.packages.${prev.stdenv.hostPlatform.system})
             agent-browser
+            agentfs
+            glotlabs-gdrive
             nvim-lazyvim
             tiger-cli
             ;
@@ -301,6 +303,10 @@
           };
 
           tiger-cli = pkgs.callPackage ./pkgs/tiger-cli {};
+
+          glotlabs-gdrive = pkgs.callPackage ./pkgs/glotlabs-gdrive {};
+
+          agentfs = pkgs.callPackage ./pkgs/agentfs {};
 
           nvim-lazyvim = pkgs.writeShellScriptBin "nvim-lazyvim" ''
 

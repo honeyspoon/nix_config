@@ -50,6 +50,18 @@ in {
         };
       };
 
+      # Keep OpenCode updated (no source compilation; uses built-in upgrader)
+      opencode-upgrade = {
+        Unit = {
+          Description = "Upgrade OpenCode";
+          After = ["network.target"];
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.bash}/bin/bash -lc 'if [ ! -x ${opencodeBin} ]; then ${pkgs.curl}/bin/curl -fsSL https://opencode.ai/install | ${pkgs.bash}/bin/bash || true; fi; if [ -x ${opencodeBin} ]; then ${opencodeBin} upgrade || true; rm -rf $HOME/.cache/opencode/node_modules $HOME/.cache/opencode/bun.lock; ${opencodeBin} debug config >/dev/null 2>&1 || true; systemctl --user restart opencode-web.service >/dev/null 2>&1 || true; fi'";
+        };
+      };
+
       # Kill nvim daily at noon
       cron-pkill-nvim = {
         Unit = {
@@ -82,6 +94,20 @@ in {
         Timer = {
           OnBootSec = "5min";
           OnUnitActiveSec = "5min";
+        };
+        Install = {
+          WantedBy = ["timers.target"];
+        };
+      };
+
+      # Daily early morning
+      opencode-upgrade = {
+        Unit = {
+          Description = "Upgrade OpenCode timer";
+        };
+        Timer = {
+          OnCalendar = "*-*-* 04:00:00";
+          Persistent = true;
         };
         Install = {
           WantedBy = ["timers.target"];

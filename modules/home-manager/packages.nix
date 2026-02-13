@@ -4,6 +4,7 @@
   ...
 }: let
   inherit (pkgs.stdenv) isDarwin isLinux;
+  isX86_64 = pkgs.stdenv.hostPlatform.isx86_64;
 
   # Rust toolchain from rust-overlay
   rustToolchain = pkgs.rust-bin.stable.latest.default.override {
@@ -150,6 +151,8 @@ in {
         yq-go
         watch
         parallel
+        rclone # robust alternative for Google Drive + more backends
+        agentfs # AgentFS CLI (FUSE on Linux, NFS on macOS)
 
         # ══════════════════════════════════════════════════════════════════
         # NETWORK TOOLS
@@ -323,6 +326,9 @@ in {
         # ══════════════════════════════════════════════════════════════════
         lspmux # share LSP instances between editors
       ]
+      ++ lib.optionals isX86_64 [
+        glotlabs-gdrive # prebuilt binaries available for x86_64 only
+      ]
       ++ lib.optionals isLinux [
         # ════════════════════════════════════════════════════════════════
         # LINUX-SPECIFIC PACKAGES
@@ -378,6 +384,9 @@ in {
         xclip
         xsel
         wl-clipboard
+
+        # Filesystems
+        fuse3
       ]
       ++ lib.optionals isDarwin [
         # ════════════════════════════════════════════════════════════════
