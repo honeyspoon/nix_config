@@ -26,6 +26,14 @@
     # Keep OpenCode up to date.
     autoupdate = true;
 
+    # UI toggles for reasoning/tool output visibility.
+    keybinds = {
+      # Toggle collapsible thinking blocks while chatting.
+      display_thinking = "f6";
+      # Open structured tool payload/details (often JSON).
+      tool_details = "f7";
+    };
+
     # LSP configuration
     lsp = {
       terraform.disabled = true;
@@ -61,7 +69,6 @@
 
     plugin = [
       "opencode-openai-codex-auth@latest"
-      "@tarquinen/opencode-dcp@latest" # Dynamic Context Pruning - reduces token usage
       "@slkiser/opencode-quota@latest" # Quota & token usage tracking with toast notifications
       "opencode-scheduler@latest"
     ];
@@ -81,7 +88,7 @@
       openai = {
         options = {
           reasoningEffort = "medium";
-          reasoningSummary = "auto";
+          reasoningSummary = "detailed";
           textVerbosity = "medium";
           include = ["reasoning.encrypted_content"];
           store = false;
@@ -103,17 +110,17 @@
             variants = {
               none = {
                 reasoningEffort = "none";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               low = {
                 reasoningEffort = "low";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               medium = {
                 reasoningEffort = "medium";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               high = {
@@ -144,12 +151,12 @@
             variants = {
               low = {
                 reasoningEffort = "low";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               medium = {
                 reasoningEffort = "medium";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               high = {
@@ -216,12 +223,12 @@
             variants = {
               low = {
                 reasoningEffort = "low";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               medium = {
                 reasoningEffort = "medium";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               high = {
@@ -247,7 +254,7 @@
             variants = {
               medium = {
                 reasoningEffort = "medium";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               high = {
@@ -273,17 +280,17 @@
             variants = {
               none = {
                 reasoningEffort = "none";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               low = {
                 reasoningEffort = "low";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "low";
               };
               medium = {
                 reasoningEffort = "medium";
-                reasoningSummary = "auto";
+                reasoningSummary = "detailed";
                 textVerbosity = "medium";
               };
               high = {
@@ -527,6 +534,9 @@ in {
       \a
 
       Then ask the question / request the confirmation.
+
+      When outputting JSON in chat, always use fenced code blocks with a
+      `json` info string and valid JSON (no double-encoded JSON strings).
 
       Also output \a once when you are completely done and no further user input is required.
     '';

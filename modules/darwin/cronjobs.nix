@@ -71,6 +71,16 @@ in {
       };
     }
     // mkUserAgent {
+      name = "cron-mas-install";
+      command = "if command -v mas >/dev/null 2>&1; then if mas account >/dev/null 2>&1; then for app in 1569813296 1500855883 1582358382 1474276998 409183694 409201541 1624912180 899247664 6739973551 497799835 6748351905; do mas install \"$app\" >/dev/null 2>&1 || true; done; else echo 'mas: not signed in; skipping installs' >&2; fi; fi";
+      startCalendarInterval = [
+        {
+          Hour = 3;
+          Minute = 30;
+        }
+      ];
+    }
+    // mkUserAgent {
       name = "cron-mantis-pull";
       command = "if [ -d ${mantisDir}/.git ]; then cd ${mantisDir} && git pull; else echo 'mantis: not a git repo' 1>&2; fi";
       startInterval = 300;

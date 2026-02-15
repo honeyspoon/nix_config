@@ -307,18 +307,9 @@ _: {
       "zotero"
     ];
 
-    masApps = {
-      "1Password for Safari" = 1569813296;
-      "CapCut" = 1500855883;
-      "Dynamic wallpaper" = 1582358382;
-      "HP Smart" = 1474276998;
-      "Keynote" = 409183694;
-      "Pages" = 409201541;
-      "Speechify" = 1624912180;
-      "TestFlight" = 899247664;
-      "TranscribeTranslate" = 6739973551;
-      "Xcode" = 497799835;
-      "flowy" = 6748351905;
-    };
+    # Disabled in brew bundle because MAS downloads are flaky and frequently
+    # fail with `mas.MASError error 5`, which aborts `darwin-rebuild switch`.
+    # We install/update these best-effort from a launchd job instead.
+    masApps = {};
   };
 }

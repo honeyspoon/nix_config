@@ -121,6 +121,7 @@ in {
         ninja
         meson
         pkg-config
+        protobuf # protoc compiler + protobuf libs
         autoconf
         automake
         libtool
